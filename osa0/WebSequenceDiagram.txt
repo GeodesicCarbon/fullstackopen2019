@@ -38,7 +38,8 @@ palvelin -> selain: spa.js
 note over selain
 Selain aloittaa js-skriptin suorituksen, joka pyytää
 "/data.json" datapaketin palvelimelta. Samalla skriptissä
-estetää lomakkeen lähetys POST-kutsulla.
+estetää lomakkeen lähetys POST-kutsulla luomalla tapahtuman-
+käsittelijän.
 end note
 selain -> palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
 palvelin -> selain: data.json
