@@ -48,3 +48,21 @@ niin suoritetaan js-skriptissä oleva takaisinkutsu.
 Tällöin js-skripti lisää DOM-API:n kautta lisää paketissa
 olavat muistinpanot listalle, ja se renderöidään ruudulle.
 end note
+
+---
+
+title 0.7_kaavio
+note over selain
+Tapahtumankäsittelijä kaappaa lomakkeen,lisää aikaleiman,
+kapseloi viestin JSON-muotoiseksi, merkitsee lähettävän
+data tyypiksi "application/json" sekä lähettää sen
+palvelimelle POST-pyynnöllä. Lisäksi selain piirtää DOM-APIa
+käyttäen uuden muistiinpanon ruudulle.
+end note
+
+selain -> palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+note over palvelin
+Palvelin vastaanottaa selaimen datan, tekee siitä
+olion ja lisää sen taulukkoon.
+end note
+palvelin -> selain: 201 Message Created {"message":"note created"}
