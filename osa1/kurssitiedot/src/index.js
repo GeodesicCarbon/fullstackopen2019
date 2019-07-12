@@ -10,15 +10,25 @@ const Header = (props) => {
   );
 }
 
+const Part = (props) => {
+  // palauta osan nimi ja tehtävien määrä <p>-tagilla
+  return(
+    <div>
+      <p>{props.part.partname} {props.part.partcount}</p>
+    </div>
+  )
+}
 const Content = (props) => {
   // luo taulukko tehtävien nimistä ja niiden määristä
   const items = [];
   for (const key in props.exercises_list) {
-    items.push(<p> {key} {props.exercises_list[key]}</p>);
+    items.push({partname: key, partcount: props.exercises_list[key]});
   }
   return (
     <div>
-      {items}
+      <Part part={items[0]} />
+      <Part part={items[1]} />
+      <Part part={items[2]} />
     </div>
   );
 }
