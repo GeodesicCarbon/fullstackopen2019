@@ -5,7 +5,7 @@ const Header = (props) => {
   // palauta kurssin nimi h1-tagilla
   return (
     <div>
-      <h1>{props.course}</h1>
+      <h1>{props.course.name}</h1>
     </div>
   );
 }
@@ -14,21 +14,17 @@ const Part = (props) => {
   // palauta osan nimi ja tehtävien määrä <p>-tagilla
   return(
     <div>
-      <p>{props.part.partname} {props.part.partcount}</p>
+      <p>{props.part.name} {props.part.exercises}</p>
     </div>
   )
 }
+
 const Content = (props) => {
-  // luo taulukko tehtävien nimistä ja niiden määristä
-  const items = [];
-  for (const key in props.exercises_list) {
-    items.push({partname: key, partcount: props.exercises_list[key]});
-  }
   return (
     <div>
-      <Part part={items[0]} />
-      <Part part={items[1]} />
-      <Part part={items[2]} />
+      <Part part={props.course.parts[0]} />
+      <Part part={props.course.parts[1]} />
+      <Part part={props.course.parts[2]} />
     </div>
   );
 }
@@ -36,7 +32,7 @@ const Content = (props) => {
 
 const Total = (props) => {
   // poimi tehtävälista-objektista tehtävien määrä per osa ja laske ne yhteen
-  const total = Object.keys(props.exercises_list).map(key => props.exercises_list[key]).reduce((a,b) => a + b,0);
+  const total = Object.keys(props.course.parts).map(key => props.course.parts[key].exercises).reduce((a,b) => a + b,0);
   // palauta tehtävien määrä
   return (
     <div>
@@ -46,53 +42,32 @@ const Total = (props) => {
 }
 
 const App = () => {
-  // const-määrittelyt
-  const course = 'Half Stack application development';
-  const part1 = 'Fundamentals of React';
-  const exercises1 = 10;
-  const part2 = 'Using props to pass data';
-  const exercises2 = 7;
-  const part3 = 'State of a component';
-  const exercises3 = 14;
+  const course = {
+      name: 'Half Stack application development',
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7
+        },
+        {
+          name: 'State of a component',
+          exercises: 14
+        }
+      ]
+    }
 
-  // tehtävälista-objekti
-  const exercises_list = {};
-  exercises_list[part1] = exercises1;
-  exercises_list[part2] = exercises2;
-  exercises_list[part3] = exercises3;
 
   return (
     <div>
       <Header course={course} />
-      <Content exercises_list={exercises_list} />
-      <Total exercises_list={exercises_list} />
+      <Content course={course} />
+      <Total course={course} />
     </div>
   )
 }
-
-// const App = () => {
-//   const part1 = 'Fundamentals of React'
-//   const exercises1 = 10
-//   const part2 = 'Using props to pass data'
-//   const exercises2 = 7
-//   const part3 = 'State of a component'
-//   const exercises3 = 14
-//
-//   return (
-//     <div>
-//       <h1>{course}</h1>
-//       <p>
-//         {part1} {exercises1}
-//       </p>
-//       <p>
-//         {part2} {exercises2}
-//       </p>
-//       <p>
-//         {part3} {exercises3}
-//       </p>
-//       <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
-//     </div>
-//   )
-// }
 
 ReactDOM.render(<App />, document.getElementById('root'));
