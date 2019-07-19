@@ -1,13 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const Hello = (props) => {
-  return(
+const Hello = ({ name, age }) => {
+  const { name, age } = props
+
+  const bornYear = () => new Date().getFullYear() - age
+
+  return (
     <div>
-      <p>Hello {props.name}, you are {props.age} years old</p>
+      <p>
+        Hello {name}, you are {age} years old
+      </p>
+      <p>So you were probably born {bornYear()}</p>
     </div>
   )
 }
+
 
 const App = () => {
   const nimi = 'Pekka'
