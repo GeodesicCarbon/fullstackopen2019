@@ -6,9 +6,9 @@ const Header = ({text}) => (<h1>{text}</h1>)
 const Statistic = ({count, text}) => {
   // lisää prosenttimerkki tarvittaessa
   if (text === 'positive') {
-    return (<div>{text} {count} %</div>)
+    return (<tr><td>{text}</td><td>{count} %</td></tr>)
   }
-   return (<div>{text} {count}</div>)
+   return (<tr><td>{text}</td><td>{count}</td></tr>)
 }
 
 const Statistics = ({votes}) => {
@@ -20,14 +20,16 @@ const Statistics = ({votes}) => {
   const average = (good - bad)/total
   const positive = good/total*100
   return(
-    <div>
-      <Statistic count={good} text='good'/>
-      <Statistic count={neutral} text='neutral'/>
-      <Statistic count={bad} text='bad'/>
-      <Statistic count={total} text='all'/>
-      <Statistic count={average} text='average'/>
-      <Statistic count={positive} text='positive'/>
-    </div>
+    <table>
+      <tbody>
+        <Statistic count={good} text='good'/>
+        <Statistic count={neutral} text='neutral'/>
+        <Statistic count={bad} text='bad'/>
+        <Statistic count={total} text='all'/>
+        <Statistic count={average} text='average'/>
+        <Statistic count={positive} text='positive'/>
+      </tbody>
+    </table>
   )
 }
 
