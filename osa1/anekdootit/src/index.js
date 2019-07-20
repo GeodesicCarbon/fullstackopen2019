@@ -1,30 +1,49 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+// Nappikomponentti
 const Button = ({handleClick, text}) => (
-  <div>
     <button onClick={handleClick}>{text}</button>
-  </div>
+)
+
+// näyttää valitun anekdootin äänimäärät
+const VoteCount = ({votes, selected}) => (
+  <div>has {votes[selected]} votes</div>
 )
 
 const App = (props) => {
   const [selected, setSelected] = useState(0)
-  const buttonText = 'next anecdote'
+  // luodaan taulukko äänistä ja täytetään se nollilla
+  const [votes, setVotes] = useState(new Array(props.anecdotes.length).fill(0))
 
-  // valitaan yksi anekdooteista
-  const handleClick = () => {
+  // nappien tekstejä
+  const nextText = 'next anecdote'
+  const voteText = 'vote'
+
+  // valitaan yksi anekdooteista satunnaisesti, voi olla sama
+  const handleNext = () => {
     const nextAnecdote = Math.floor(Math.random()*props.anecdotes.length)
     setSelected(nextAnecdote)
+  }
+
+  // lisätään yksi ääni valitulle anekdootille
+  const handleVote = () => {
+    const voteCopy = [...votes]
+    voteCopy[selected] += 1
+    setVotes(voteCopy)
   }
 
   return (
     <div>
       {props.anecdotes[selected]}
-      <Button handleClick={handleClick} text={buttonText} />
+      <VoteCount votes={votes} selected={selected} />
+      <Button handleClick={handleVote} text={voteText} />
+      <Button handleClick={handleNext} text={nextText} />
     </div>
   )
 }
 
+// anekdootteja
 const anecdotes = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
