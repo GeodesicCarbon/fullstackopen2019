@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+// Otsikkokomponentti
+const Header = ({text}) => (<h1>{text}</h1>)
+
 // Nappikomponentti
 const Button = ({handleClick, text}) => (
     <button onClick={handleClick}>{text}</button>
@@ -12,15 +15,24 @@ const VoteCount = ({votes, selected}) => (
 )
 
 const App = (props) => {
-  const [selected, setSelected] = useState(0)
+  // Valitaan yksi anekdootti satunnaisesti näytettäväksi
+  const [selected, setSelected] = useState(Math.floor(Math.random()*props.anecdotes.length))
   // luodaan taulukko äänistä ja täytetään se nollilla
   const [votes, setVotes] = useState(new Array(props.anecdotes.length).fill(0))
+
+  // otsikkojen tekstejä
+  const anecdoteHeader = 'Anecdote of the day'
+  const votedHeader = 'Anecdote with the most votes'
 
   // nappien tekstejä
   const nextText = 'next anecdote'
   const voteText = 'vote'
 
-  // valitaan yksi anekdooteista satunnaisesti, voi olla sama
+  // Etsitään eniten ääniä saanut anekdootti.
+  // Oletaan, että hitaus ei haittaa ja anekdootteja ei ole paljon
+  const mostVoted = votes.indexOf(Math.max(...votes))
+
+  // valitaan seuraavaksi yksi anekdooteista satunnaisesti, voi olla sama
   const handleNext = () => {
     const nextAnecdote = Math.floor(Math.random()*props.anecdotes.length)
     setSelected(nextAnecdote)
@@ -35,10 +47,14 @@ const App = (props) => {
 
   return (
     <div>
+      <Header text={anecdoteHeader} />
       {props.anecdotes[selected]}
       <VoteCount votes={votes} selected={selected} />
       <Button handleClick={handleVote} text={voteText} />
       <Button handleClick={handleNext} text={nextText} />
+      <Header text={votedHeader} />
+      {props.anecdotes[mostVoted]}
+      <VoteCount votes={votes} selected={mostVoted} />
     </div>
   )
 }
