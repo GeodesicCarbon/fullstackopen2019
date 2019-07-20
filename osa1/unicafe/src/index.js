@@ -3,7 +3,33 @@ import ReactDOM from 'react-dom'
 
 const Header = ({text}) => (<h1>{text}</h1>)
 
-const Statistics = ({count, text}) => (<div>{text} {count}</div>)
+const Statistic = ({count, text}) => {
+  // lisää prosenttimerkki tarvittaessa
+  if (text === 'positive') {
+    return (<div>{text} {count} %</div>)
+  }
+   return (<div>{text} {count}</div>)
+}
+
+const Statistics = ({votes}) => {
+  const [good, neutral, bad] = votes
+  const total = votes.reduce((a,b) => a+b,0)
+  if (total === 0) {
+    return (<div>No feedback given</div>)
+  }
+  const average = (good - bad)/total
+  const positive = good/total*100
+  return(
+    <div>
+      <Statistic count={good} text='good'/>
+      <Statistic count={neutral} text='neutral'/>
+      <Statistic count={bad} text='bad'/>
+      <Statistic count={total} text='all'/>
+      <Statistic count={average} text='average'/>
+      <Statistic count={positive} text='positive'/>
+    </div>
+  )
+}
 
 const Button = ({handleClick, text}) => (
   <button onClick={handleClick}>
@@ -39,9 +65,7 @@ const App = () => {
       <Button handleClick={handleNeutralClick} text='neutral'/>
       <Button handleClick={handleBadClick} text='bad'/>
       <Header text={statisticsHeader} />
-      <Statistics count={good} text ='good' />
-      <Statistics count={neutral} text ='neutral' />
-      <Statistics count={bad} text ='bad' />
+      <Statistics votes={[good, neutral, bad]}/>
     </div>
   )
 }
