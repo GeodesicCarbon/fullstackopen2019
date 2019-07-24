@@ -1,13 +1,16 @@
 import React from 'react'
 
+// Otsikkokomponentti
 const Header = ({header}) => (
   <h2>{header}</h2>
 )
 
+// Henkilöiden esittäminen taulukkomuodossa
 const Person = ({person}) => (
   <tr><td>{person.name}</td><td>{person.number}</td></tr>
 )
 
+// Luo taulukon osoitekirjaa varten
 const Persons = ({persons}) => (
   <table>
     <tbody>
@@ -21,6 +24,7 @@ const Persons = ({persons}) => (
   </table>
 )
 
+// Lomake henkilöiden lisäämistä varten
 const PersonForm = ({personForm}) => (
   <form onSubmit={personForm.addPerson}>
     <div>
@@ -41,6 +45,7 @@ const PersonForm = ({personForm}) => (
   </form>
 )
 
+// Lomake suodattimelle
 const FilterForm = ({filterForm}) => (
   <div>
     name: <input
@@ -50,6 +55,7 @@ const FilterForm = ({filterForm}) => (
   </div>
 )
 
+// Osoitekirjan luova komponentti.
 const Phonebook = ({personForm, filterForm, persons}) => {
   return (
     <div>
