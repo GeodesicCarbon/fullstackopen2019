@@ -1,19 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Phonebook from './components/Phonebook'
 
 const App = () => {
-  // Testihenkilöt
-  const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  // Henkilökokoelma
+  const [ persons, setPersons] = useState([])
   // Uuden henkilön tiedot
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   // Suodattimen tiedot
   const [ filter, setFilter] = useState('')
+
+  // haetaan tiedot paikalliselta JSON-palvelimelta
+  useEffect(() => {
+  axios
+    .get('http://localhost:3001/persons')
+    .then(response => {
+      setPersons(response.data)
+    })
+}, [])
 
   // Jos suodatin ei ole tyhjä, muuta nimet ja suodatin
   // pieniksi kirjaimikse ja suodata näytetävät numerot
