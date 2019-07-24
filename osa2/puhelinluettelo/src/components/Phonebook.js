@@ -1,5 +1,9 @@
 import React from 'react'
 
+const Header = ({header}) => (
+  <h2>{header}</h2>
+)
+
 const Person = ({person}) => (
   <tr><td>{person.name}</td><td>{person.number}</td></tr>
 )
@@ -37,12 +41,23 @@ const PersonForm = ({personForm}) => (
   </form>
 )
 
-const Phonebook = ({personForm, persons}) => {
+const FilterForm = ({filterForm}) => (
+  <div>
+    name: <input
+            value={filterForm.filter}
+            onChange={filterForm.handleFilterChange}
+          />
+  </div>
+)
+
+const Phonebook = ({personForm, filterForm, persons}) => {
   return (
     <div>
-      <h2>Phonebook</h2>
+      <Header header='Phonebook' />
+      <FilterForm filterForm={filterForm} />
+      <Header header='Add a new number' />
       <PersonForm personForm={personForm} />
-      <h2>Numbers</h2>
+      <Header header='Number' />
       <Persons persons={persons}/>
     </div>
   )
