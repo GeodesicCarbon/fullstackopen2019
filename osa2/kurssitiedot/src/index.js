@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import Course from './components/Course'
 
 const App = () => {
+  // Objekti, joka sisältää kurssin nimi, sen osat ja
+  // niiden laajuudet
   const course = {
     name: 'Half Stack application development',
     parts: [
@@ -24,6 +26,7 @@ const App = () => {
     ]
   }
 
+  // Käytetään Course-komponenttia kaiken tulostukseen
   return (
     <div>
       <Course course={course} />
