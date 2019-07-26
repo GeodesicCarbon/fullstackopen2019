@@ -8,6 +8,10 @@ const App = () => {
   const [search, setSearch] = useState('')
   const [countries, setCountries] = useState([])
   const [countryTag, setCountryTag] = useState('')
+  const [weather, setWeather] = useState({})
+
+  // OpenWeather.org API avain
+  const appID = ''
 
   // Haetaan maiden tiedot REST-apin kautta ja tallennetann
   // ne tilamuuttujaan
@@ -59,6 +63,29 @@ const App = () => {
     setCountryTag(alpha3Code)
   }
 
+  // Jos maa on löydetty, aktivoidaan useEffect(getWeather)
+  // ja haetaan pääkaupungin sää.
+  const weatherLoadBlocker =
+    countriesToShow.length === 1
+    ? [true]
+    : [false]
+
+  // Säänhakufunktio
+  const getWeather = () => {
+    if (countriesToShow.length === 1) {
+      const capital = countriesToShow[0].capital
+      axios
+        .get(`http://api.openweathermap.org/data/2.5/weather?q=${capital}&units=metric&APPID=${appID}`)
+        .then(response => {
+          setWeather(response.data)
+        })
+    } else {
+    }
+  }
+
+  // Jos maa on valitty niin haetaan sää
+  useEffect(getWeather, weatherLoadBlocker)
+
   // kootaan etsintäkentälle tarvittavat objektit yhteen
   const searchForm = {
     search,
@@ -70,6 +97,7 @@ const App = () => {
     <CountryData
       searchForm={searchForm}
       countries={countriesToShow}
+      weather={weather}
     />
   )
 }
