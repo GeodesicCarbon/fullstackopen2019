@@ -70,6 +70,7 @@ const App = () => {
       personService
       .deletePerson(id)
       .then(() => {
+        // ilmoitetaan onnistuneesta poistosta
         notify(
           `'${person.name}' has been deleted`,
           'success'
@@ -104,6 +105,7 @@ const App = () => {
         personService
         .update(changedPerson.id, changedPerson)
         .then(returnedPerson => {
+          // ilmoitetaan onnistuneesta päivityksestä
           notify(
             `'${oldPerson.name}' has been updated`,
             'success'
@@ -111,14 +113,16 @@ const App = () => {
           setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
         })
         .catch(error => {
+          // ilmoitetaan virheestä
           notify(
-            `'${oldPerson.name}' was already removed from server`,
+            `Unable to update. '${oldPerson.name}' has already been removed from server`,
             'error'
           )
           setPersons(persons.filter(p => p.id !== oldPerson.id))
          })
       }
     } else {
+      // Jos henkilöä ei vielä ole lisätty, tehdään se
       const personObject = {
         name: newName,
         number: newNumber
@@ -126,8 +130,9 @@ const App = () => {
       personService
         .create(personObject)
         .then(returnedPerson => {
+          // ilmoitetaan onnistuneesta lisäyksestä
           notify(
-            `Added ${returnedPerson.name}`,
+            `'${returnedPerson.name}' has been added`,
             'success'
           )
           setPersons(persons.concat(returnedPerson))
