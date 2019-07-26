@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Phonebook from './components/Phonebook'
+import personService from './services/persons'
 
 const App = () => {
   // Henkilökokoelma
@@ -13,12 +13,12 @@ const App = () => {
 
   // haetaan tiedot paikalliselta JSON-palvelimelta
   useEffect(() => {
-  axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
-    })
-}, [])
+    personService
+      .getAll()
+      .then(intialPersons => {
+        setPersons(intialPersons)
+      })
+  }, [])
 
   // Jos suodatin ei ole tyhjä, muuta nimet ja suodatin
   // pieniksi kirjaimikse ja suodata näytetävät numerot
@@ -56,9 +56,13 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     }
   }
 
