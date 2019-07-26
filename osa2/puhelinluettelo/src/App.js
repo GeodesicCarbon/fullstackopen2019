@@ -10,6 +10,8 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   // Suodattimen tiedot
   const [ filter, setFilter] = useState('')
+  // ilmoituksen tiedot
+  const [notification, setNotification] = useState({message: null, type:null})
 
   // haetaan tiedot paikalliselta JSON-palvelimelta
   useEffect(() => {
@@ -29,6 +31,21 @@ const App = () => {
             filter.toLowerCase())
           )
 
+  // Funktio, joka luo ilmoituksen sekä sen palautuksen
+  // 5s kuluttua
+  const notify = (message, type) => {
+    setNotification({
+      message: message,
+      type: type
+    })
+    setTimeout(() => {
+      setNotification({
+        message: null,
+        type: null
+      })
+    }, 5000)
+  }
+
   // Nimikentän muutosfunktio
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -44,15 +61,26 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  // Henkilön poistofunktio
   const deletePerson = id => {
+    // etsitään oikea objekti
     const person = persons.find(person => person.id === id)
+    // varmistetaan, että henkilö halutaan poistaa
     if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
       personService
       .deletePerson(id)
-      .then(setPersons(persons.filter(p => p.id !== id)))
+      .then(() => {
+        notify(
+          `'${person.name}' has been deleted`,
+          'success'
+        )
+        setPersons(persons.filter(p => p.id !== id))
+      })
       .catch(error => {
-         alert(
-           `the person '${person.name}' was already deleted from server`
+        // Jos henkilö on jo poistettu, tehdää siitä ilmoitus
+         notify(
+           `'${person.name}' was already deleted from server`,
+           'error'
          )
          setPersons(persons.filter(p => p.id !== id))
        })
@@ -64,21 +92,30 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    // Jos henkilön nimi on jo kirjassa, estä sen lisäys
+    // Jos henkilön nimi on jo kirjassa, kysy jos halutaan päivitää se
     if (persons.map(person => person.name).includes(newName)) {
       if (window.confirm(`${newName} is already added to phonebook. Would you like update the number?`)) {
+        // Alkuperäinen objekti
         const oldPerson = persons.find(person => person.name === newName)
+        // Päivitetty objekti
         const changedPerson = {...oldPerson, number: newNumber}
+
+        // Päivitetään tietokanta
         personService
         .update(changedPerson.id, changedPerson)
         .then(returnedPerson => {
+          notify(
+            `'${oldPerson.name}' has been updated`,
+            'success'
+          )
           setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
         })
         .catch(error => {
-           alert(
-             `the person '${oldPerson.name}' was already deleted from server`
-           )
-           setPersons(persons.filter(p => p.id !== oldPerson.id))
+          notify(
+            `'${oldPerson.name}' was already removed from server`,
+            'error'
+          )
+          setPersons(persons.filter(p => p.id !== oldPerson.id))
          })
       }
     } else {
@@ -89,6 +126,10 @@ const App = () => {
       personService
         .create(personObject)
         .then(returnedPerson => {
+          notify(
+            `Added ${returnedPerson.name}`,
+            'success'
+          )
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
@@ -118,6 +159,7 @@ const App = () => {
       personForm={personForm}
       filterForm={filterForm}
       persons={personsToShow}
+      notification={notification}
     />
   )
 

@@ -1,5 +1,24 @@
 import React from 'react'
 
+// Ilmoituskomponentti
+const Notification = ({ notification}) => {
+  if (notification.message === null) {
+    return null
+  }
+  if (notification.type === "success")
+  return (
+    <div className="success">
+      {notification.message}
+    </div>
+  )
+  else if (notification.type === "error")
+  return (
+    <div className="success">
+      {notification.message}
+    </div>
+  )
+}
+
 // Otsikkokomponentti
 const Header = ({header}) => (
   <h2>{header}</h2>
@@ -61,10 +80,11 @@ const FilterForm = ({filterForm}) => (
 )
 
 // Osoitekirjan luova komponentti.
-const Phonebook = ({personForm, filterForm, persons}) => {
+const Phonebook = ({personForm, filterForm, persons, notification}) => {
   return (
     <div>
       <Header header='Phonebook' />
+      <Notification notification={notification} />
       <FilterForm filterForm={filterForm} />
       <Header header='Add a new number' />
       <PersonForm personForm={personForm} />
