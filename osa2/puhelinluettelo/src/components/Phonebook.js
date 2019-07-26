@@ -6,18 +6,23 @@ const Header = ({header}) => (
 )
 
 // Henkilöiden esittäminen taulukkomuodossa
-const Person = ({person}) => (
-  <tr><td>{person.name}</td><td>{person.number}</td></tr>
+const Person = ({person, deletePerson}) => (
+  <tr>
+    <td>{person.name}</td>
+    <td>{person.number}</td>
+    <td><button onClick={() => deletePerson(person.id)}> Delete contact </button></td>
+    </tr>
 )
 
 // Luo taulukon osoitekirjaa varten
-const Persons = ({persons}) => (
+const Persons = ({persons, deletePerson}) => (
   <table>
     <tbody>
       {persons.map(person =>
           <Person
             key={person.name}
             person={person}
+            deletePerson={deletePerson}
           />
       )}
     </tbody>
@@ -64,7 +69,7 @@ const Phonebook = ({personForm, filterForm, persons}) => {
       <Header header='Add a new number' />
       <PersonForm personForm={personForm} />
       <Header header='Number' />
-      <Persons persons={persons}/>
+      <Persons persons={persons} deletePerson={personForm.deletePerson}/>
     </div>
   )
 }

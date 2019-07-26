@@ -44,6 +44,24 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const deletePerson = id => {
+    console.log(id)
+    const person = persons.find(person => person.id === id)
+    console.log(person)
+    if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
+      personService
+      .deletePerson(id)
+      .then(setPersons(persons.filter(p => p.id !== id)))
+      .catch(error => {
+         alert(
+           `the person '${person.name}' was already deleted from server`
+         )
+         setPersons(persons.filter(p => p.id !== id))
+       })
+
+     }
+  }
+
   // Henkilön lisääminen osoitekirjaan
   const addPerson = (event) => {
     event.preventDefault()
@@ -73,7 +91,8 @@ const App = () => {
       newName,
       handleNameChange,
       newNumber,
-      handleNumberChange
+      handleNumberChange,
+      deletePerson
     }
 
   // Same suodatinkentälle
