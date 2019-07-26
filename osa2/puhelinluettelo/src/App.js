@@ -45,9 +45,7 @@ const App = () => {
   }
 
   const deletePerson = id => {
-    console.log(id)
     const person = persons.find(person => person.id === id)
-    console.log(person)
     if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
       personService
       .deletePerson(id)
@@ -68,7 +66,21 @@ const App = () => {
 
     // Jos henkilön nimi on jo kirjassa, estä sen lisäys
     if (persons.map(person => person.name).includes(newName)) {
-      window.alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook. Would you like update the number?`)) {
+        const oldPerson = persons.find(person => person.name === newName)
+        const changedPerson = {...oldPerson, number: newNumber}
+        personService
+        .update(changedPerson.id, changedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+        })
+        .catch(error => {
+           alert(
+             `the person '${oldPerson.name}' was already deleted from server`
+           )
+           setPersons(persons.filter(p => p.id !== oldPerson.id))
+         })
+      }
     } else {
       const personObject = {
         name: newName,
