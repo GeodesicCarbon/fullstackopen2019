@@ -43,6 +43,16 @@ app.get('/api/persons', (req, res) => {
   res.json(persons)
 })
 
+// tarjotaan info-sivu
+app.get('/info', (req, res) => {
+  const peopleCount = persons.length
+  const timeNow = new Date()
+  res.send(
+    `<p>Phonebook has info for ${peopleCount} people</p>
+    <p>${timeNow}</p>`
+  )
+})
+
  // asetetaan palvelin kuuntelemaan porttia 3001
 const port = 3001
 app.listen(port, () => {
