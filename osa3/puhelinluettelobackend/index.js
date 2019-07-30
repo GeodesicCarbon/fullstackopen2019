@@ -1,8 +1,22 @@
 const express = require('express')
-const app = express()
+// Middlewaret
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 
+// rekisteräidään middlewaret
+const app = express()
 app.use(bodyParser.json())
+
+// luodaan morganille uusi JSON-token
+morgan.token('json-string', (req, res) => {
+  if (req.is('application/json') && req.method === 'POST') {
+    return JSON.stringify(req.body)
+  } else {
+    return ' '
+  }
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json-string'))
 
 // esimerkkihenkilöt
 let persons = [
