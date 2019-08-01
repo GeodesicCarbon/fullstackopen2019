@@ -6,6 +6,21 @@ const cors = require('cors')
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('build'))
+const mongoose = require('mongoose')
+
+// ÄLÄ KOSKAAN TALLETA SALASANOJA githubiin!
+const url =
+  'mongodb+srv://fullstack:secret@fullstack2019-dzwdj.mongodb.net/note-app?retryWrites=true&w=majority'
+
+mongoose.connect(url, { useNewUrlParser: true })
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+})
+
+const Note = mongoose.model('Note', noteSchema)
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
