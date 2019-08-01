@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:ui": "rm -rf build && cd ../../osa2/puhelinluettelo && npm run build --prod && cp -r build ../../osa3/puhelinluettelobackend/",
-    "deploy": "cd .. && git push subtree --prefix puhelinluettelobackend heroku master",
+    "deploy": "cd ../.. && git subtree push --prefix osa3/puhelinluettelobackend heroku-puhelinluettelo master",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
     "logs:prod": "heroku logs --tail",
     "start": "node index.js",
