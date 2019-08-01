@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:ui": "rm -rf build && cd ../../osa2/notes_part2 && npm run build --prod && cp -r build ../../osa3/notebackend/",
     "start": "node index.js",
+    "deploy": "git subtree push --prefix . heroku master",
+   "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
     "watch": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "logs:prod": "heroku logs --tail"
   },
   "author": "Vadim Gurkalov",
   "license": "MIT",

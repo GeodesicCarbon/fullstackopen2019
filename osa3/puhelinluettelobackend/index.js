@@ -1,11 +1,14 @@
 const express = require('express')
 // Middlewaret
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const morgan = require('morgan')
 
 // rekisteräidään middlewaret
 const app = express()
+app.use(cors())
 app.use(bodyParser.json())
+app.use(express.static('build'))
 
 // luodaan morganille uusi JSON-token
 morgan.token('json-string', (req, res) => {
@@ -124,7 +127,7 @@ app.get('/info', (req, res) => {
 })
 
  // asetetaan palvelin kuuntelemaan porttia 3001
-const port = 3001
+const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
 })
