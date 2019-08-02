@@ -103,23 +103,27 @@ const App = () => {
 
         // Päivitetään tietokanta
         personService
-        .update(changedPerson.id, changedPerson)
-        .then(returnedPerson => {
-          // ilmoitetaan onnistuneesta päivityksestä
-          notify(
-            `'${oldPerson.name}' has been updated`,
-            'success'
-          )
-          setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
-        })
-        .catch(error => {
-          // ilmoitetaan virheestä
-          notify(
-            `Unable to update. '${oldPerson.name}' has already been removed from server`,
-            'error'
-          )
-          setPersons(persons.filter(p => p.id !== oldPerson.id))
-         })
+          .update(changedPerson.id, changedPerson)
+          .then(returnedPerson => {
+            // ilmoitetaan onnistuneesta päivityksestä
+            notify(
+              `'${oldPerson.name}' has been updated`,
+              'success'
+            )
+            setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+          })
+          .catch(error => {
+            // Jos puhelinnumero ei ole päässyt validoinnista, otetaan virheviesti
+            // ja näytetään käyttäjälle
+            if (error.response.data.error === "Phone number is too short"
+                ||error.response.data.error === "Phone number is required") {
+                  notify(error.response.data.error, 'error')
+            } else if (error.response.status === 404){
+              // Jos henkilöä ei löydy luettelosta, ilmoitetaan siitä erikseen
+              notify(`'${oldPerson.name}' has been removed from the phonebook`, 'error')
+              setPersons(persons.filter(p => p.id !== oldPerson.id))
+            }
+          })
       }
     } else {
       // Jos henkilöä ei vielä ole lisätty, tehdään se
@@ -139,6 +143,10 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+        // Näytetään virheviesti kun lisäys on epäonnistunut
+        .catch(error => {
+          notify(error.response.data.error, 'error')
+         })
     }
   }
 
