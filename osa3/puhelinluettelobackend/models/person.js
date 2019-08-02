@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
+// korjatan deprecation-huomautukset
 mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true);
 
 // EI SALASANOJA GITHUBIIN
 const url = process.env.MONGODB_URI
@@ -19,9 +22,21 @@ mongoose.connect(url, {useNewUrlParser:true})
 
 // Luodaan skeema henkilöobjektille
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
+  name: {
+    type: String,
+    minlength: [3, 'Name is too short'],
+    required: [true, 'Name is required'],
+    unique: true,
+  },
+  number: {
+    type: String,
+    minlength: [8, 'Phone number is too short'],
+    required: [true,'Phone number is required'],
+  }
 })
+
+// käytetään uniqueValidator-pluginiä skeemalla
+personSchema.plugin(uniqueValidator, { message: '{VALUE} is already added to the phonebook'})
 
 // Muokataan tietokannalta saadun objektin muotoa helpommin käsiteltäväksi
 personSchema.set('toJSON', {
