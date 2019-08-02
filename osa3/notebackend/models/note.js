@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+mongoose.set('useFindAndModify', false)
 
 // ÄLÄ KOSKAAN TALLETA SALASANOJA githubiin!
 const url = process.env.MONGODB_URI
