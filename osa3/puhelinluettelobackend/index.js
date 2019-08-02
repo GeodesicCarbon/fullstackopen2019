@@ -45,7 +45,7 @@ const errorHandler = (error, request, response, next) => {
   // eslint no-undef: 'field'
   switch (error.name) {
   case 'ValidationError':
-    for (field in error.errors) {
+    for (const field in error.errors) {
       switch (error.errors[field].kind) {
       case 'unique':
       case 'minlength':
