@@ -1,8 +1,16 @@
+// luetaan configuroitimuuttujat
+require('dotenv').config()
+
+// Sisällytetään backend
 const express = require('express')
+
 // Middlewaret
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
+
+// Moduulit
+const Person = require('./models/person.js')
 
 // rekisteräidään middlewaret
 const app = express()
@@ -18,7 +26,6 @@ morgan.token('json-string', (req, res) => {
     return ' '
   }
 })
-
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json-string'))
 
 // esimerkkihenkilöt
@@ -57,15 +64,20 @@ app.get('/', (req, res) => {
 
 // tarjotaan JSON-taulukko
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({}).then(people => {
+    res.json(people.map(person => person.toJSON()))
+  })
 })
 
 // tarjotaan yhden henkilön tiedot JSON-muodossa
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find( person  => person.id === id)
-  if (person) res.json(person)
-  else res.status(404).end()
+  Person.findById(req.params.id)
+  .then(person => {
+    res.json(person.toJSON())
+  })
+  .catch(error => {
+    res.status(404).end()
+  })
 })
 
 // poistetaan taulukosta henkilö id-tunnuksella
@@ -75,13 +87,15 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
-// Generoidaan ID uudelle henkilölle
-const generateId = () => {
-  const maxId = persons.length > 0
-    ? Math.max(...persons.map(p => p.id))
-    : 0
-  return maxId + 1
-}
+// ID generointi siirretty MongoDB-palvelimeen. Jätetään varalle
+// ---
+// // Generoidaan ID uudelle henkilölle
+// const generateId = () => {
+//   const maxId = persons.length > 0
+//     ? Math.max(...persons.map(p => p.id))
+//     : 0
+//   return maxId + 1
+// }
 
 // lisätääm uusi henkilö puhelinluetteloon
 app.post('/api/persons', (req, res) => {
@@ -99,20 +113,23 @@ app.post('/api/persons', (req, res) => {
     })
   }
   // tarkistetaan, että nimi ei ole jo olemassa puhelinluettelossa
-  if (persons.filter(p => p.name === body.name).length) {
-    return res.status(409).json({
-      error: 'name already exists'
+  Person.findOne({"name": body.name})
+  .then(result => {
+    if (result !== null) {
+      return res.status(409).json({
+        error: 'name already exists'
+      })
+    }
+
+    const person = new Person ({
+      name: body.name,
+      number: body.number,
     })
-  }
 
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: generateId()
-  }
-
-  persons = persons.concat(person)
-  res.json(person)
+    person.save().then(savedPerson => {
+      res.json(savedPerson.toJSON())
+    })
+  })
 })
 
 
@@ -126,8 +143,8 @@ app.get('/info', (req, res) => {
   )
 })
 
- // asetetaan palvelin kuuntelemaan porttia 3001
-const port = process.env.PORT || 3001
+ // asetetaan palvelin kuuntelemaan määriteltyä porttia
+const port = process.env.PORT
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
 })
