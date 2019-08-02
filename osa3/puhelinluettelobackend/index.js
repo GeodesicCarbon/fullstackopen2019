@@ -81,11 +81,14 @@ app.get('/', (req, res) => {
 // tarjotaan info-sivu
 app.get('/info', (req, res) => {
   const peopleCount = persons.length
-  const timeNow = new Date()
-  res.send(
-    `<p>Phonebook has info for ${peopleCount} people</p>
-    <p>${timeNow}</p>`
-  )
+  Person.countDocuments({})
+    .then(count => {
+      const timeNow = new Date()
+      res.send(
+        `<p>Phonebook has info for ${count} people</p>
+        <p>${timeNow}</p>`
+      )
+    })
 })
 
 // tarjotaan JSON-taulukko
