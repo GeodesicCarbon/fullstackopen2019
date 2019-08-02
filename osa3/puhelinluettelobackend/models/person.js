@@ -3,7 +3,7 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 // korjatan deprecation-huomautukset
 mongoose.set('useFindAndModify', false)
-mongoose.set('useCreateIndex', true);
+mongoose.set('useCreateIndex', true)
 
 // EI SALASANOJA GITHUBIIN
 const url = process.env.MONGODB_URI
@@ -12,8 +12,8 @@ const url = process.env.MONGODB_URI
 const logPrefix = '[MONGOOSE]'
 
 // Yhdistetään Atlas MongoDB -palvelimeen
-mongoose.connect(url, {useNewUrlParser:true})
-  .then(result => {
+mongoose.connect(url, { useNewUrlParser:true })
+  .then(() => {
     console.log(logPrefix, 'connected to MongoDB')
   })
   .catch(error => {
@@ -36,7 +36,7 @@ const personSchema = new mongoose.Schema({
 })
 
 // käytetään uniqueValidator-pluginiä skeemalla
-personSchema.plugin(uniqueValidator, { message: '{VALUE} is already added to the phonebook'})
+personSchema.plugin(uniqueValidator, { message: '{VALUE} is already added to the phonebook' })
 
 // Muokataan tietokannalta saadun objektin muotoa helpommin käsiteltäväksi
 personSchema.set('toJSON', {
