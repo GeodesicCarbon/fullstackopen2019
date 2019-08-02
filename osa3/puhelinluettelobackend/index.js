@@ -78,6 +78,16 @@ app.get('/', (req, res) => {
   res.send('<h1>Welcome to the FULLSTACK phonebook!</h1>')
 })
 
+// tarjotaan info-sivu
+app.get('/info', (req, res) => {
+  const peopleCount = persons.length
+  const timeNow = new Date()
+  res.send(
+    `<p>Phonebook has info for ${peopleCount} people</p>
+    <p>${timeNow}</p>`
+  )
+})
+
 // tarjotaan JSON-taulukko
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(people => {
@@ -94,15 +104,6 @@ app.get('/api/persons/:id', (req, res, next) => {
     } else {
       res.status(404).end()
     }
-  })
-  .catch(error => next(error))
-})
-
-// poistetaan taulukosta henkilö id-tunnuksella
-app.delete('/api/persons/:id', (req, res, next) => {
-  Person.findByIdAndRemove(req.params.id)
-  .then(person =>{
-    res.status(204).end()
   })
   .catch(error => next(error))
 })
@@ -152,14 +153,32 @@ app.post('/api/persons', (req, res) => {
   })
 })
 
-// tarjotaan info-sivu
-app.get('/info', (req, res) => {
-  const peopleCount = persons.length
-  const timeNow = new Date()
-  res.send(
-    `<p>Phonebook has info for ${peopleCount} people</p>
-    <p>${timeNow}</p>`
-  )
+// Päivitetään henkilöiden tiedot
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+
+  const person = {
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        res.json(updatedPerson.toJSON())
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
+})
+
+// poistetaan taulukosta henkilö id-tunnuksella
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+  .then(person =>{
+    res.status(204).end()
+  })
+  .catch(error => next(error))
 })
 
 // Tarjotaan 404-sivu jos URL:ä ei löydy palvelimelta
