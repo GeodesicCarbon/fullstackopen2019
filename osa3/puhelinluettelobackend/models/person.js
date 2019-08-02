@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 
+mongoose.set('useFindAndModify', false)
+
 // EI SALASANOJA GITHUBIIN
 const url = process.env.MONGODB_URI
 

@@ -28,6 +28,22 @@ morgan.token('json-string', (req, res) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json-string'))
 
+// Tuntematon URL middleware
+const unknownEndpoint = (req, res) => {
+  response.status(404).send({error: 'unknownEndpoint'})
+}
+
+// Virheenkäsittely middleware
+const errorHandler = (error, request, response, next) => {
+  console.error('[ErrorHandler]', error.message)
+
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+    return response.status(400).send({error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
 // esimerkkihenkilöt
 let persons = [
   {
@@ -70,21 +86,25 @@ app.get('/api/persons', (req, res) => {
 })
 
 // tarjotaan yhden henkilön tiedot JSON-muodossa
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
   .then(person => {
-    res.json(person.toJSON())
+    if (person) {
+      res.json(person.toJSON())
+    } else {
+      res.status(404).end()
+    }
   })
-  .catch(error => {
-    res.status(404).end()
-  })
+  .catch(error => next(error))
 })
 
 // poistetaan taulukosta henkilö id-tunnuksella
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+  .then(person =>{
+    res.status(204).end()
+  })
+  .catch(error => next(error))
 })
 
 // ID generointi siirretty MongoDB-palvelimeen. Jätetään varalle
@@ -132,7 +152,6 @@ app.post('/api/persons', (req, res) => {
   })
 })
 
-
 // tarjotaan info-sivu
 app.get('/info', (req, res) => {
   const peopleCount = persons.length
@@ -142,6 +161,12 @@ app.get('/info', (req, res) => {
     <p>${timeNow}</p>`
   )
 })
+
+// Tarjotaan 404-sivu jos URL:ä ei löydy palvelimelta
+app.use(unknownEndpoint)
+
+// Rekisteräidään virheenkäsittelijä
+app.use(errorHandler)
 
  // asetetaan palvelin kuuntelemaan määriteltyä porttia
 const port = process.env.PORT
