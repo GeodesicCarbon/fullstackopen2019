@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
 })
 
 // tarjotaan info-sivu
-app.get('/info', (req, res) => {
+app.get('/info', (req, res, next) => {
   const peopleCount = persons.length
   Person.countDocuments({})
     .then(count => {
@@ -89,13 +89,15 @@ app.get('/info', (req, res) => {
         <p>${timeNow}</p>`
       )
     })
+    .catch(error => next(error))
 })
 
 // tarjotaan JSON-taulukko
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Person.find({}).then(people => {
     res.json(people.map(person => person.toJSON()))
   })
+  .catch(error => next(error))
 })
 
 // tarjotaan yhden henkilön tiedot JSON-muodossa
@@ -122,7 +124,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 // }
 
 // lisätääm uusi henkilö puhelinluetteloon
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   // tarkistetaan, että sisältö on olemassa
@@ -150,9 +152,11 @@ app.post('/api/persons', (req, res) => {
       number: body.number,
     })
 
-    person.save().then(savedPerson => {
-      res.json(savedPerson.toJSON())
-    })
+    person.save()
+      .then(savedPerson => {
+        res.json(savedPerson.toJSON())
+      })
+      .catch(error => next(error))
   })
 })
 
