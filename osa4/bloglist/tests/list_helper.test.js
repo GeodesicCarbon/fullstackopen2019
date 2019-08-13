@@ -2,7 +2,7 @@ const listHelper = require('../utils/list_helper')
 // testiblogit haettu osoitteesta
 // https://github.com/fullstackopen-2019/misc/blob/master/blogs_for_test.md
 
-const mostLiked1 = {
+const mostLiked1 = { // total likes 5 + (12)
   _id: '5a422b3a1b54a676234d17f9',
   title: 'Canonical string reduction',
   author: 'Edsger W. Dijkstra',
@@ -29,7 +29,16 @@ const extraDjikstra = {
   __v: 0
 }
 
-const secondMostLiked =   { // also most blogs written (3)
+const chanExtra = { // total likes 7 + (5)
+  _id: '5b422a851b54a676234d17f7',
+  title: 'React patterns 2',
+  author: 'Michael Chan',
+  url: 'https://reactpatterns2.com/',
+  likes: 5,
+  __v: 0
+}
+
+const secondMostLiked =   { // also most blogs written (3), total likes 12 + (10)
   _id: '5a422b891b54a676234d17fa',
   title: 'First class tests',
   author: 'Robert C. Martin',
@@ -200,5 +209,53 @@ describe('author of the most blogs owned', () => {
   test('of multiple equally prolific authors not dependent on order', () => {
     const blogs = [extraDjikstra].concat(blogsEnd.concat([mostLiked1].concat(blogsStart)))
     expect([{ author: mostLiked1.author, blogs: 3 }, { author: secondMostLiked.author, blogs: 3 }]).toContainEqual(listHelper.mostBlogs(blogs))
+  })
+})
+
+// 4.7
+describe('author with most likes', () => {
+  test('of empty list is null', () => {
+    const blogs = []
+    expect(listHelper.mostLikes(blogs)).toBe(null)
+  })
+
+  test('of single blog be writer of that blog', () => {
+    const blog = mostLiked1
+    expect(listHelper.mostLikes([blog])).toEqual({ author: mostLiked1.author, likes: 12 })
+  })
+
+  test('of single blog not dependent on blog', () => {
+    const blog = secondMostLiked
+    expect(listHelper.mostLikes([blog])).toEqual({ author: secondMostLiked.author, likes: 10 })
+  })
+
+  test('of many blogs to be the author with the most cumulative likes', () => {
+    const blogs = blogsStart.concat(blogsEnd.concat([mostLiked1]))
+    expect(listHelper.mostLikes(blogs)).toEqual({ author: mostLiked1.author, likes: 17 })
+  })
+
+  test('of many blogs to not be dependent on list order', () => {
+    const blogs = [mostLiked1].concat(blogsEnd.concat(blogsStart))
+    expect(listHelper.mostLikes(blogs)).toEqual({ author: mostLiked1.author, likes: 17 })
+  })
+
+  test('of many blogs the cumulative score not the highes one', () => {
+    const blogs = [chanExtra, chanExtra, mostLiked1, chanExtra] // Chan: 3*5, Djikstra: 12
+    expect(listHelper.mostLikes(blogs)).toEqual({ author: chanExtra.author, likes: 15 })
+  })
+
+  test('of many blogs the cumulative score not dependent on order', () => {
+    const blogs = [mostLiked1, chanExtra, chanExtra, chanExtra] // Chan: 3*5, Djikstra: 12
+    expect(listHelper.mostLikes(blogs)).toEqual({ author: chanExtra.author, likes: 15 })
+  })
+
+  test('of multiple equally prolific authors to be one of them', () => {
+    const blogs = blogsStart.concat(blogsEnd.concat([chanExtra]))
+    expect([{ author: chanExtra.author, likes: 12 }, { author: secondMostLiked.author, likes: 12 }]).toContainEqual(listHelper.mostLikes(blogs))
+  })
+
+  test('of multiple equally prolific authors not dependent on order', () => {
+    const blogs = [chanExtra].concat(blogsEnd.concat(blogsStart))
+    expect([{ author: chanExtra.author, likes: 12 }, { author: secondMostLiked.author, likes: 12 }]).toContainEqual(listHelper.mostLikes(blogs))
   })
 })

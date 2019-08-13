@@ -17,7 +17,7 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-  // Yhden rivin ihme, jolla ryhmitetään tekijät blogien määrän perusteella, avataan
+  // Yhden rivin ihme, jolla tekijöiden blogien määrä, avataan
   // objekti {key:value} arrayksi [key, value] järjestetään suuruusjärjestykseen
   // blogien määrän mukaan, valitaan ensimmäinen ja zipataan se haluttujen avaimien
   // kanssa uudeksi objektiksi.
@@ -30,9 +30,20 @@ const mostBlogs = (blogs) => {
     : _(keys).zipObject(_(blogs).countBy(blog => blog.author).toPairs().orderBy(blog => blog[1], ['desc']).head()).value()
 }
 
+const mostLikes = (blogs) => {
+  // Yhden rivin ihme, jolla ryhmitetään tykkäykset tekijöiden perusteella, avataan objekti {key:value} arrayksi [key, value] järjestetään suuruusjärjestykseen blogien määrän mukaan, valitaan ensimmäinen ja zipataan se haluttujen avaimien kanssa uudeksi objektiksi.
+
+  // Funktionaalinen ohjelmointi parhaimmillaan
+
+  const keys = ['author', 'likes']
+  return blogs.length === 0
+    ? null
+    : _(keys).zipObject(_(blogs).map(blog => _.pick(blog,['author','likes'])).groupBy('author').map( blog => [blog[0].author, blog.reduce( (a, b) => a + b.likes, 0)]).orderBy(author => author[1], ['desc']).first()).value()
+}
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
