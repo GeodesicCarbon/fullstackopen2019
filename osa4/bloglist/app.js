@@ -6,6 +6,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const middleware = require('./utils/middleware')
 
 // Ladataan kontrolleri
 const blogsRouter = require('./controllers/blogs')
@@ -20,5 +21,7 @@ app.use(bodyParser.json())
 
 // Yhdistetään kontrolleri moduuliin
 app.use('/api/blogs', blogsRouter)
+
+app.use(middleware.errorHandler)
 
 module.exports = app

@@ -76,6 +76,34 @@ describe('blogs api', () => {
     expect(blogsAfterPost.length).toBe(helper.initialBlogs.length + 1)
     expect(blogsAfterPost.find(b => b.author === 'foo').likes).toBe(0)
   })
+  test('A blog with no title will not be added', async () => {
+    const noTitle = {
+      author: 'no title',
+      url: 'http://notitle/'
+    }
+    await api
+      .post('/api/blogs')
+      .send(noTitle)
+      .expect(400)
+
+    const blogsAfterPost = await helper.blogsInDb()
+    expect(blogsAfterPost.length).toBe(helper.initialBlogs.length)
+    expect(blogsAfterPost.find(b => b.author === noTitle.author)).toBe(undefined)
+  })
+  test('A blog with no url will not be added', async () => {
+    const noUrl = {
+      author: 'No Url',
+      title: 'no url'
+    }
+    await api
+      .post('/api/blogs')
+      .send(noUrl)
+      .expect(400)
+
+    const blogsAfterPost = await helper.blogsInDb()
+    expect(blogsAfterPost.length).toBe(helper.initialBlogs.length)
+    expect(blogsAfterPost.find(b => b.author === noUrl.author)).toBe(undefined)
+  })
 })
 
 afterAll(() => {
