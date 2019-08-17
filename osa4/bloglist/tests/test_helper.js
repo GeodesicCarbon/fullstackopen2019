@@ -21,6 +21,13 @@ const initialBlogs = [
   }
 ]
 
+const newBlog = {
+  title: 'Canonical string reduction 2.0',
+  author: 'Edsger W. Dijkstra',
+  url: 'http://www2.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+  likes: 4,
+}
+
 const nonExistingId = async () => {
   const blog = new Blog({ title: 'placeholder' })
   await blog.save()
@@ -35,5 +42,5 @@ const blogsInDb = async () => {
 }
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb
+  initialBlogs, nonExistingId, blogsInDb, newBlog
 }

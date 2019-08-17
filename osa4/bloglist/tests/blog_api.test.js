@@ -33,8 +33,48 @@ describe('blogs api', () => {
 
   test('blog has an "id" field', async () => {
     const response = await api.get('/api/blogs')
-
     expect(response.body[0].id).toBeDefined()
+  })
+
+  test('all blogs have an "id" field', async () => {
+    const response = await api.get('/api/blogs')
+    const blogs = response.body.map(b => b.id)
+    expect(blogs).not.toContain(undefined)
+  })
+
+  test('an nonexitent blog cannot be found', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body).not.toContainEqual(helper.newBlog)
+  })
+
+  test('a new valid blog can be added', async () => {
+    await api
+      .post('/api/blogs')
+      .send(helper.newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAfterPost = await helper.blogsInDb()
+    expect(blogsAfterPost.length).toBe(helper.initialBlogs.length + 1)
+    const titles = blogsAfterPost.map(b => b.title)
+    expect(titles).toContainEqual(helper.newBlog.title)
+  })
+
+  test('blog with no "likes" field will have a value of 0', async () => {
+    const unlikedBlog = {
+      author: 'foo',
+      title: 'bar',
+      url: 'http://foobar.baz/'
+    }
+    await api
+      .post('/api/blogs')
+      .send(unlikedBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAfterPost = await helper.blogsInDb()
+    expect(blogsAfterPost.length).toBe(helper.initialBlogs.length + 1)
+    expect(blogsAfterPost.find(b => b.author === 'foo').likes).toBe(0)
   })
 })
 
