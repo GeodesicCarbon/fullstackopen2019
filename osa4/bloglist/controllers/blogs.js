@@ -22,11 +22,27 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
+// Poistetaan blogi
 blogsRouter.delete('/:id', async (request, response, next) => {
   const blogId = request.params.id
   try {
     await Blog.findByIdAndRemove(blogId)
     response.status(204).end()
+  } catch (exception) {
+    next(exception)
+  }
+})
+
+// Päivitetään blogin tiedot
+blogsRouter.put('/:id', async (request, response, next) => {
+  const blog = request.body
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new:true, runValidators: true })
+    if (updatedBlog) {
+      response.json(updatedBlog.toJSON())
+    } else {
+      response.status(404).end()
+    }
   } catch (exception) {
     next(exception)
   }

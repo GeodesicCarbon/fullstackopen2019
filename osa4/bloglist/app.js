@@ -12,7 +12,7 @@ const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
 
 // Yhdistetään MongoDB-tietokantaan
-mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true , useFindAndModify: false })
 
 // Määritellään express-moduuli ja sen middlewaret
 const app = express()
