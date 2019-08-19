@@ -7,6 +7,7 @@ const helper = require('./test_helper')
 
 // Ladataan tarvittava MongoDB -skeema
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // alustetaan supertestit
 const app = require('../app')
@@ -320,6 +321,65 @@ describe('when there are blogs already present', () => {
 
       expect(blogsAfterChange.length).toEqual(response.body.length)
       expect(blogsAfterChange).not.toContainEqual(blogsAfterChange)
+    })
+  })
+})
+
+describe('when there is an user already present', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    const user = new User({ username: 'admin', password: 'admin' })
+    await user.save()
+  })
+  test('accessing all users succeeds', async () => {
+    const response = await api
+      .get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    const usersInDb = await helper.usersInDb()
+    expect(response.body).toContainEqual(usersInDb[0])
+  })
+
+  describe('and interacting with new user', () => {
+    test('adding new user succeeds', async () => {
+      const usersBefore = await helper.usersInDb()
+
+      const newUser = {
+        username: 'Hououin Kyoma',
+        name: 'Rintaro Okabe',
+        password: 'ElPsyCongroo'
+      }
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAfter = await helper.usersInDb()
+      expect(usersAfter.length).toBe(usersBefore.length + 1)
+
+      const usernames = usersAfter.map(u => u.username)
+      expect(usernames).toContainEqual(newUser.username)
+
+      const names = usersAfter.map(u => u.name)
+      expect(names).toContainEqual(newUser.name)
+    })
+    test('adding new user with same username fails', async () => {
+      const usersBefore = await helper.usersInDb()
+      const userDuplicate = {
+        username: usersBefore[0].username,
+        password: 'password'
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(userDuplicate)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+      expect(result.body.error).toContain('`username` to be unique')
+
+      const usersAfter = await helper.usersInDb()
+      expect(usersAfter.length).toBe(usersBefore.length)
     })
   })
 })
