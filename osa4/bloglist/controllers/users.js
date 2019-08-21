@@ -18,6 +18,14 @@ usersRouter.post('/', async (req, res, next) => {
   try {
     const body = req.body
 
+    if (!body.password) {
+      return res.status(400).send({ error: '`password` is required' })
+    }
+
+    if (body.password.length < 3) {
+      return res.status(409).send({ error: '`password` must be at least 3 charactes long' })
+    }
+
     // luodaan uusi hash salasanasta
     const saltRounds = 10 // 10 on suositus, Elokuu 2019
     const passwordHash = await bcrypt.hash(body.password, saltRounds)

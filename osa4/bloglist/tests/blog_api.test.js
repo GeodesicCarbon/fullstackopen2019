@@ -364,6 +364,27 @@ describe('when there is an user already present', () => {
       const names = usersAfter.map(u => u.name)
       expect(names).toContainEqual(newUser.name)
     })
+
+    test('adding new user without username fails', async () => {
+      const usersBefore = await helper.usersInDb()
+
+      const newUser = {
+        name: 'Rintaro Okabe',
+        password: 'ElPsyCongroo'
+      }
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+      const usersAfter = await helper.usersInDb()
+      expect(usersAfter.length).toBe(usersBefore.length)
+
+      const names = usersAfter.map(u => u.name)
+      expect(names).not.toContainEqual(newUser.name)
+    })
+
     test('adding new user with same username fails', async () => {
       const usersBefore = await helper.usersInDb()
       const userDuplicate = {
@@ -374,12 +395,53 @@ describe('when there is an user already present', () => {
       const result = await api
         .post('/api/users')
         .send(userDuplicate)
-        .expect(400)
+        .expect(409)
         .expect('Content-Type', /application\/json/)
-      expect(result.body.error).toContain('`username` to be unique')
+      expect(result.body.error).toContain(`username ${usersBefore[0].username} has already been taken`)
 
       const usersAfter = await helper.usersInDb()
       expect(usersAfter.length).toBe(usersBefore.length)
+    })
+
+    test('adding new user with no password fails', async () => {
+      const usersBefore = await helper.usersInDb()
+      const userNoPassword = {
+        username: 'foo',
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(userNoPassword)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+      expect(result.body.error).toContain('`password` is required')
+
+      const usersAfter = await helper.usersInDb()
+      expect(usersAfter.length).toBe(usersBefore.length)
+
+      const usernames = usersAfter.map(u => u.username)
+      expect(usernames).not.toContainEqual(userNoPassword.username)
+    })
+
+    test('adding new user with password shorter than 3 fails', async () => {
+      const usersBefore = await helper.usersInDb()
+      const userShortPassword = {
+        username: 'foo',
+        password: 'ba'
+      }
+
+      const result = await api
+        .post('/api/users')
+        .send(userShortPassword)
+        .expect(409)
+        .expect('Content-Type', /application\/json/)
+      expect(result.body.error).toContain('`password` must be at least 3 charactes long')
+
+      const usersAfter = await helper.usersInDb()
+      expect(usersAfter.length).toBe(usersBefore.length)
+
+      const usernames = usersAfter.map(u => u.username)
+      expect(usernames).not.toContainEqual(userShortPassword.username)
     })
   })
 })

@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema({
   username: {
     type: String,
     unique: true,
+    required: true,
   },
   name: String,
   passwordHash: String,
@@ -20,7 +21,7 @@ const userSchema = mongoose.Schema({
 
 // Käytetää uniqueValidator-pluginiä jotta validointi tapahtuisi backendissä
 // eikä tietokannassa
-userSchema.plugin(uniqueValidator)
+userSchema.plugin(uniqueValidator, { message: 'username {VALUE} has already been taken' })
 
 // Luodaan funktio joka siivoaa objektin ja palauttaa sen JSON-muodossa
 userSchema.set('toJSON', {
