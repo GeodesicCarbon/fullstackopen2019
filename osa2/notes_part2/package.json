@@ -33,5 +33,5 @@
   },
   "devDependencies": {
     "json-server": "^0.15.0"
-  },
+  }
 }
