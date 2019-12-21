@@ -1,5 +1,5 @@
 // Ladataan tarvittavat moduulit
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const usersRouter = require('express').Router()
 // Ladataan käyttäjän MongoDB-skeema
 const User = require('../models/user')
