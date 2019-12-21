@@ -323,125 +323,158 @@ describe('when there are blogs already present', () => {
       expect(blogsAfterChange).not.toContainEqual(blogsAfterChange)
     })
   })
-})
 
-describe('when there is an user already present', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-    const user = new User({ username: 'admin', password: 'admin' })
-    await user.save()
-  })
-  test('accessing all users succeeds', async () => {
-    const response = await api
-      .get('/api/users')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-    const usersInDb = await helper.usersInDb()
-    expect(response.body).toContainEqual(usersInDb[0])
-  })
-
-  describe('and interacting with new user', () => {
-    test('adding new user succeeds', async () => {
-      const usersBefore = await helper.usersInDb()
-
-      const newUser = {
-        username: 'Hououin Kyoma',
-        name: 'Rintaro Okabe',
-        password: 'ElPsyCongroo'
-      }
-      await api
-        .post('/api/users')
-        .send(newUser)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-
-      const usersAfter = await helper.usersInDb()
-      expect(usersAfter.length).toBe(usersBefore.length + 1)
-
-      const usernames = usersAfter.map(u => u.username)
-      expect(usernames).toContainEqual(newUser.username)
-
-      const names = usersAfter.map(u => u.name)
-      expect(names).toContainEqual(newUser.name)
+  describe('when there is an user already present', () => {
+    beforeEach(async () => {
+      await User.deleteMany({})
+      const user = new User({ username: 'admin', password: 'admin' })
+      await user.save()
     })
 
-    test('adding new user without username fails', async () => {
-      const usersBefore = await helper.usersInDb()
-
-      const newUser = {
-        name: 'Rintaro Okabe',
-        password: 'ElPsyCongroo'
-      }
-      await api
-        .post('/api/users')
-        .send(newUser)
-        .expect(400)
+    test('accessing all users succeeds', async () => {
+      const response = await api
+        .get('/api/users')
+        .expect(200)
         .expect('Content-Type', /application\/json/)
-
-      const usersAfter = await helper.usersInDb()
-      expect(usersAfter.length).toBe(usersBefore.length)
-
-      const names = usersAfter.map(u => u.name)
-      expect(names).not.toContainEqual(newUser.name)
+      const usersInDb = await helper.usersInDb()
+      expect(response.body).toContainEqual(usersInDb[0])
     })
 
-    test('adding new user with same username fails', async () => {
-      const usersBefore = await helper.usersInDb()
-      const userDuplicate = {
-        username: usersBefore[0].username,
-        password: 'password'
-      }
+    describe('and interacting with new user', () => {
+      test('adding new user succeeds', async () => {
+        const usersBefore = await helper.usersInDb()
 
-      const result = await api
-        .post('/api/users')
-        .send(userDuplicate)
-        .expect(409)
-        .expect('Content-Type', /application\/json/)
-      expect(result.body.error).toContain(`username ${usersBefore[0].username} has already been taken`)
+        const newUser = {
+          username: 'Hououin Kyoma',
+          name: 'Rintaro Okabe',
+          password: 'ElPsyCongroo'
+        }
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
 
-      const usersAfter = await helper.usersInDb()
-      expect(usersAfter.length).toBe(usersBefore.length)
+        const usersAfter = await helper.usersInDb()
+        expect(usersAfter.length).toBe(usersBefore.length + 1)
+
+        const usernames = usersAfter.map(u => u.username)
+        expect(usernames).toContainEqual(newUser.username)
+
+        const names = usersAfter.map(u => u.name)
+        expect(names).toContainEqual(newUser.name)
+      })
+
+      test('adding new user without username fails', async () => {
+        const usersBefore = await helper.usersInDb()
+
+        const newUser = {
+          name: 'Rintaro Okabe',
+          password: 'ElPsyCongroo'
+        }
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAfter = await helper.usersInDb()
+        expect(usersAfter.length).toBe(usersBefore.length)
+
+        const names = usersAfter.map(u => u.name)
+        expect(names).not.toContainEqual(newUser.name)
+      })
+
+      test('adding new user with same username fails', async () => {
+        const usersBefore = await helper.usersInDb()
+        const userDuplicate = {
+          username: usersBefore[0].username,
+          password: 'password'
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(userDuplicate)
+          .expect(409)
+          .expect('Content-Type', /application\/json/)
+        expect(result.body.error).toContain(`username ${usersBefore[0].username} has already been taken`)
+
+        const usersAfter = await helper.usersInDb()
+        expect(usersAfter.length).toBe(usersBefore.length)
+      })
+
+      test('adding new user with no password fails', async () => {
+        const usersBefore = await helper.usersInDb()
+        const userNoPassword = {
+          username: 'foo',
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(userNoPassword)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+        expect(result.body.error).toContain('`password` is required')
+
+        const usersAfter = await helper.usersInDb()
+        expect(usersAfter.length).toBe(usersBefore.length)
+
+        const usernames = usersAfter.map(u => u.username)
+        expect(usernames).not.toContainEqual(userNoPassword.username)
+      })
+
+      test('adding new user with password shorter than 3 fails', async () => {
+        const usersBefore = await helper.usersInDb()
+        const userShortPassword = {
+          username: 'foo',
+          password: 'ba'
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(userShortPassword)
+          .expect(409)
+          .expect('Content-Type', /application\/json/)
+        expect(result.body.error).toContain('`password` must be at least 3 charactes long')
+
+        const usersAfter = await helper.usersInDb()
+        expect(usersAfter.length).toBe(usersBefore.length)
+
+        const usernames = usersAfter.map(u => u.username)
+        expect(usernames).not.toContainEqual(userShortPassword.username)
+      })
     })
+    describe('Adding a blog with an user', () => {
+      test('succeeds with correct parameters', async () => {
+        await api
+          .post('/api/blogs')
+          .send(helper.newBlog)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+      })
+      test('adds a valid blog with correct parameters', async () => {
+        const blogsBeforePost = await helper.blogsInDb()
+        const users = await helper.usersInDb()
+        const user = users[0]
 
-    test('adding new user with no password fails', async () => {
-      const usersBefore = await helper.usersInDb()
-      const userNoPassword = {
-        username: 'foo',
-      }
+        const result = await api
+          .post('/api/blogs')
+          .send(helper.newBlog)
 
-      const result = await api
-        .post('/api/users')
-        .send(userNoPassword)
-        .expect(400)
-        .expect('Content-Type', /application\/json/)
-      expect(result.body.error).toContain('`password` is required')
+        const body = result.body
+        const returnedId = body.id
+        delete body.id
+        const validBlog = { ...helper.newBlog, user:user.id }
+        expect(body).toEqual({ ...validBlog, user:user.id })
 
-      const usersAfter = await helper.usersInDb()
-      expect(usersAfter.length).toBe(usersBefore.length)
+        const blogsAfterPost = await helper.blogsInDbPopulated()
+        expect(blogsAfterPost.length).toBe(blogsBeforePost.length + 1)
 
-      const usernames = usersAfter.map(u => u.username)
-      expect(usernames).not.toContainEqual(userNoPassword.username)
-    })
-
-    test('adding new user with password shorter than 3 fails', async () => {
-      const usersBefore = await helper.usersInDb()
-      const userShortPassword = {
-        username: 'foo',
-        password: 'ba'
-      }
-
-      const result = await api
-        .post('/api/users')
-        .send(userShortPassword)
-        .expect(409)
-        .expect('Content-Type', /application\/json/)
-      expect(result.body.error).toContain('`password` must be at least 3 charactes long')
-
-      const usersAfter = await helper.usersInDb()
-      expect(usersAfter.length).toBe(usersBefore.length)
-
-      const usernames = usersAfter.map(u => u.username)
-      expect(usernames).not.toContainEqual(userShortPassword.username)
+        validBlog.user = user
+        delete validBlog.user.blogs
+        validBlog.id = returnedId
+        expect(blogsAfterPost).toContainEqual(validBlog)
+      })
     })
   })
 })

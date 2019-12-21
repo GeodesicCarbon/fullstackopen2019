@@ -42,12 +42,27 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
+const blogsInDbPopulated = async () => {
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  return blogs.map(blog => blog.toJSON())
+}
+
 const usersInDb = async () => {
   const users = await User.find({})
   return users.map(user => user.toJSON())
 }
 
+const getFirstUserIdObject = async () => {
+  const users = await User.find({})
+  return users[0]._id
+}
 
 module.exports = {
-  initialBlogs, nonExistingBlogId, blogsInDb, newBlog, usersInDb
+  initialBlogs,
+  nonExistingBlogId,
+  blogsInDb,
+  newBlog,
+  usersInDb,
+  getFirstUserIdObject,
+  blogsInDbPopulated
 }
