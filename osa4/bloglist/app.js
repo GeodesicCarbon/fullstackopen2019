@@ -25,6 +25,9 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
+// Määritellään tokenin haku -middleware
+app.use(middleware.tokenExtractor)
+
 // Yhdistetään kontrolleri moduuliin
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
