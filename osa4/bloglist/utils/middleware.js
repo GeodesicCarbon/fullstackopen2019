@@ -14,6 +14,10 @@ const errorHandler = (err, req, res, next) => {
       }
     }
     break
+  case 'JsonWebTokenError':
+    return res.status(401).json({
+      error: 'invalid token'
+    })
   }
   next(err)
 }

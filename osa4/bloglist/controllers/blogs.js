@@ -1,9 +1,19 @@
 // ladataan tarvittavat moduulit
 const blogsRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 // ladataan blogien MongoDB-skeema
 const Blog = require('../models/blog')
 const User = require('../models/user')
 // Ladataan virheidenhallinnan middleware
+
+// Eristetään pyynnön token käyttäjien hallintaan
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
 
 // --- Määritellään reitit ---
 // Palautetaan tallennetut blogit
@@ -16,10 +26,19 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
 
+  const token = getTokenFrom(request)
   try {
     // const user = await User.findById(body.userId)
-    const users = await User.find({}) // tehtävää 4.17 varten käytetään ensimmäistä käyttäjää blogien omistajaksi
-    const user = users[0]
+    // const users = await User.find({}) // tehtävää 4.17 varten käytetään ensimmäistä käyttäjää blogien omistajaksi
+    // const user = users[0]
+    // Tarkistetaan token ja haetaan vastaava käyttäjä
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    }
+
+    const user = await User.findById(decodedToken.id)
+
     const blog = new Blog({
       title:  body.title,
       author: body.author,
