@@ -51,12 +51,14 @@ blogsRouter.post('/', async (request, response, next) => {
 blogsRouter.delete('/:id', async (request, response, next) => {
   const blogId = request.params.id
   try {
+    // haetaan poistopyynnön tekijä
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!request.token || !decodedToken.id) {
       return response.status(401).json({ error: 'token missing or invalid' })
     }
 
     const blog = await Blog.findById(blogId)
+    // tarkistetaan, että poistaja on blogin omistaja
     if (blog.user.toString() === decodedToken.id) {
       await Blog.findByIdAndRemove(blogId)
       response.status(204).end()

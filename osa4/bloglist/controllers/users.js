@@ -14,6 +14,7 @@ usersRouter.get('/', async (req, res, next) => {
   }
 })
 
+// luodaan uusi käyttäjä
 usersRouter.post('/', async (req, res, next) => {
   try {
     const body = req.body
