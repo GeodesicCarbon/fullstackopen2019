@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLiking }) => {
   const [expanded, setExpanded] = useState(false)
 
   const showWhenExpanded = { display: expanded ? '' : 'none' }
@@ -21,7 +21,7 @@ const Blog = ({ blog }) => {
           <a href={blog.url}>{blog.url}</a>
         </div>
         <div>
-          {blog.likes} likes <button>Like</button>
+          {blog.likes} likes <button onClick={() => handleLiking(blog.id)}>Like</button>
         </div>
         <div>
           Added by {blog.user.name}

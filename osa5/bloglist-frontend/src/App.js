@@ -76,6 +76,7 @@ const App = () => {
     notify('Logged out succesfully', 'success')
   }
 
+  // Uuden blogin luomisen logiikka
   const handleNewBlog = async (event) => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()
@@ -98,7 +99,27 @@ const App = () => {
         notify('Unable to submit a note: ' + e.response.data.error, 'error')
       else
         notify('Unable to submit a note: ' + e, 'error')
-      console.log(e)
+    }
+  }
+  // Tykkäysten korottamisen logiikka
+  const handleLiking = async (id) => {
+    const blog = blogs.find(x => x.id === id)
+    try {
+      const updatedBlog = {
+        likes: blog.likes + 1,
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        user: blog.user.id
+      }
+      const res = await blogService.update(blog.id, updatedBlog)
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : res))
+      notify(`Submitted a like: ${blog.title}`, 'success')
+    } catch (e) {
+      if (e.response)
+        notify('Unable to submit a note: ' + e.response.data.error, 'error')
+      else
+        notify('Unable to submit a note: ' + e, 'error')
     }
   }
 
@@ -159,7 +180,7 @@ const App = () => {
         <BlogSubmit blogForm={blogForm} />
       </Togglable>
       <hr/>
-      {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+      {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLiking={handleLiking} />)}
     </div>
   )
 }

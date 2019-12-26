@@ -10,9 +10,9 @@ const setToken = newToken => {
 }
 
 // haetaan kaikki blogit palvelimelta
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+const getAll = async () => {
+  const response = await axios.get(baseUrl)
+  return (response.data)
 }
 
 // lisätään uusi blogi palvelimelle
@@ -24,4 +24,10 @@ const create = async newBlog => {
   return response.data
 }
 
-export default { getAll, create, setToken }
+// Päivitetään blogin tiedo
+const update = async (id, updatedBlog) => {
+  const response = await axios.put(`${baseUrl}/${id}`, updatedBlog)
+  return response.data
+}
+
+export default { getAll, create, update, setToken }
