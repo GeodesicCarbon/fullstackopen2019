@@ -5,6 +5,7 @@ import BlogSubmit from "./components/BlogSubmit"
 import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 // Tuodaan tarvittavat palvelut
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -21,9 +22,9 @@ const App = () => {
   const [password,  setPassword] =  useState('')
   const [user,      setUser] =      useState(null)
   // - uuden blogin lisääminen
-  const [blogtitle,   setBlogtitle] =   useState('')
-  const [blogauthor,  setBlogauthor] =  useState('')
-  const [blogurl,     setBlogurl] =     useState('')
+  const [blogtitle,     setBlogtitle]       = useState('')
+  const [blogauthor,    setBlogauthor]      = useState('')
+  const [blogurl,       setBlogurl]         = useState('')
 
   // haetaan blogit palvelimelta
   useEffect(() => {
@@ -77,6 +78,7 @@ const App = () => {
 
   const handleNewBlog = async (event) => {
     event.preventDefault()
+    blogFormRef.current.toggleVisibility()
     try {
       const blogObject = {
         title:  blogtitle,
@@ -96,6 +98,7 @@ const App = () => {
         notify('Unable to submit a note: ' + e.response.data.error, 'error')
       else
         notify('Unable to submit a note: ' + e, 'error')
+      console.log(e)
     }
   }
 
@@ -113,6 +116,9 @@ const App = () => {
       })
     }, 5000)
   }
+
+  // viite blogin lisäyslomakkeeseen
+  const blogFormRef = React.createRef()
 
   // kirjautumislomake
   const loginForm = {
@@ -149,7 +155,9 @@ const App = () => {
       <Notification notification={notification} />
       <h1>Blogs</h1>
       <Logout user={user} handleLogout={handleLogout} />
-      <BlogSubmit blogForm={blogForm} />
+      <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+        <BlogSubmit blogForm={blogForm} />
+      </Togglable>
       <hr/>
       {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
     </div>
