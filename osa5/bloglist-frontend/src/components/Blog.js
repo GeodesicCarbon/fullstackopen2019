@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, handleLiking }) => {
+const Blog = ({ blog, username, handleLiking, handleDelete }) => {
   const [expanded, setExpanded] = useState(false)
 
   const showWhenExpanded = { display: expanded ? '' : 'none' }
@@ -10,6 +10,14 @@ const Blog = ({ blog, handleLiking }) => {
   }
   if(!blog.user || !blog.user.name)
     blog.user = {name: 'Uknown'}
+
+  const deleteButton = () => {
+    if (blog.user.username === username)
+      return (
+        <div>
+          <button onClick={() => handleDelete(blog.id)}>Remove blog from note</button>
+        </div>
+      )}
 
   return (
     <div className="blog">
@@ -26,6 +34,7 @@ const Blog = ({ blog, handleLiking }) => {
         <div>
           Added by {blog.user.name}
         </div>
+        {deleteButton()}
       </div>
     </div>
   )

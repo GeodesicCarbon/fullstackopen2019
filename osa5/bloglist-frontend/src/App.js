@@ -89,6 +89,10 @@ const App = () => {
       }
 
       const res = await blogService.create(blogObject)
+      res.user = {
+        username: user.username,
+        name: user.name
+      }
       setBlogs(blogs.concat(res))
       setBlogurl('')
       setBlogtitle('')
@@ -120,6 +124,23 @@ const App = () => {
         notify('Unable to submit a note: ' + e.response.data.error, 'error')
       else
         notify('Unable to submit a note: ' + e, 'error')
+    }
+  }
+
+  // Blogien poistaminen listalta
+  const handleDelete = async (id) => {
+    const blog = blogs.find(b => b.id === id)
+    if (window.confirm(`Are you sure you want to delete '${blog.title}' by ${blog.author}`)) {
+      try {
+        await blogService.remove(id)
+        setBlogs(blogs.filter(b => b.id !== id))
+        notify('Blog deleted succesfully', 'success')
+      } catch (e) {
+        if (e.response)
+          notify('Unable to delete a note: ' + e.response.data.error, 'error')
+        else
+          notify('Unable to delete a note: ' + e, 'error')
+      }
     }
   }
 
@@ -180,7 +201,15 @@ const App = () => {
         <BlogSubmit blogForm={blogForm} />
       </Togglable>
       <hr/>
-      {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLiking={handleLiking} />)}
+      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog
+          key={blog.id}
+          username={user.username}
+          blog={blog}
+          handleLiking={handleLiking}
+          handleDelete={handleDelete}
+        />
+      )}
     </div>
   )
 }
