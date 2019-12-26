@@ -4,6 +4,7 @@ import Blog from './components/Blog'
 import BlogSubmit from "./components/BlogSubmit"
 import Login from './components/Login'
 import Logout from './components/Logout'
+import Notification from './components/Notification'
 // Tuodaan tarvittavat palvelut
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -14,7 +15,7 @@ const App = () => {
   // - näytettävät blogit
   const [blogs, setBlogs] = useState([])
   // - viestit ja virheilmoitukset
-  const [errorMessage, setErrorMessage] = useState('')
+  const [notification, setNotification] = useState({message: null, type: null})
   // - kirjautuminen
   const [username,  setUsername] =  useState('')
   const [password,  setPassword] =  useState('')
@@ -57,14 +58,12 @@ const App = () => {
       )
 
       blogService.setToken(user.token)
+      notify('Logged in succesfully', 'success')
       setUser(user)
       setUsername('')
       setPassword('')
     } catch (e) {
-      setErrorMessage('Incorrect username or password')
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
+      notify('Incorrect username or password', 'error')
     }
   }
 
@@ -73,6 +72,7 @@ const App = () => {
     setUser(null)
     blogService.setToken('')
     window.localStorage.removeItem('loggedBloglistUser')
+    notify('Logged out succesfully', 'success')
   }
 
   const handleNewBlog = async (event) => {
@@ -90,12 +90,28 @@ const App = () => {
       setBlogurl('')
       setBlogtitle('')
       setBlogauthor('')
+      notify('Added "' + blogObject.title + '" by ' + blogObject.author, 'success')
     } catch (e) {
-      setErrorMessage('Unable to submit a note: ' + e)
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000)
+      if (e.response)
+        notify('Unable to submit a note: ' + e.response.data.error, 'error')
+      else
+        notify('Unable to submit a note: ' + e, 'error')
     }
+  }
+
+  // Funktio, joka luo ilmoituksen sekä sen palautuksen
+  // 5s kuluttua
+  const notify = (message, type) => {
+    setNotification({
+      message: message,
+      type: type
+    })
+    setTimeout(() => {
+      setNotification({
+        message: null,
+        type: null
+      })
+    }, 5000)
   }
 
   // kirjautumislomake
@@ -121,6 +137,7 @@ const App = () => {
   if (user === null){
     return (
       <div>
+        <Notification notification={notification} />
         <h1>Blogs</h1>
         <Login loginForm={loginForm} />
       </div>
@@ -129,6 +146,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification notification={notification} />
       <h1>Blogs</h1>
       <Logout user={user} handleLogout={handleLogout} />
       <BlogSubmit blogForm={blogForm} />
