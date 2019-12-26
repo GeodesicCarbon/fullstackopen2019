@@ -11,6 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.blog {
+  padding-top: 10px;
+  padding-left: 2px;
+  border-style: solid;
+  border-radius: 1px;
+  margin-bottom: 5px;
+}
+
 .error {
   color: red;
   background: lightgrey;
