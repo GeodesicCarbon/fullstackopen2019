@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Tuodaan tarvittavat komponentit
 import Blog from './components/Blog'
+import BlogSubmit from "./components/BlogSubmit"
 import Login from './components/Login'
 import Logout from './components/Logout'
 // Tuodaan tarvittavat palvelut
@@ -15,9 +16,13 @@ const App = () => {
   // - viestit ja virheilmoitukset
   const [errorMessage, setErrorMessage] = useState('')
   // - kirjautuminen
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [username,  setUsername] =  useState('')
+  const [password,  setPassword] =  useState('')
+  const [user,      setUser] =      useState(null)
+  // - uuden blogin lisääminen
+  const [blogtitle,   setBlogtitle] =   useState('')
+  const [blogauthor,  setBlogauthor] =  useState('')
+  const [blogurl,     setBlogurl] =     useState('')
 
   // haetaan blogit palvelimelta
   useEffect(() => {
@@ -64,10 +69,33 @@ const App = () => {
   }
 
   // käyttäjän uloskirjautumiseen vaadittavat toimet
-  const handleLogout = async (event) => {
+  const handleLogout = async () => {
     setUser(null)
     blogService.setToken('')
     window.localStorage.removeItem('loggedBloglistUser')
+  }
+
+  const handleNewBlog = async (event) => {
+    event.preventDefault()
+    try {
+      const blogObject = {
+        title:  blogtitle,
+        author: blogauthor,
+        url:    blogurl,
+        likes:  0,
+      }
+
+      const res = await blogService.create(blogObject)
+      setBlogs(blogs.concat(res))
+      setBlogurl('')
+      setBlogtitle('')
+      setBlogauthor('')
+    } catch (e) {
+      setErrorMessage('Unable to submit a note: ' + e)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
   }
 
   // kirjautumislomake
@@ -79,6 +107,16 @@ const App = () => {
     handleLogin
   }
 
+  // Blogin lisäämislomake
+  const blogForm = {
+    blogtitle,
+    setBlogtitle,
+    blogauthor,
+    setBlogauthor,
+    blogurl,
+    setBlogurl,
+    handleNewBlog
+  }
   // jos käyttäjä ei ole kirjautunut sisään näytetään vain kirjautumislomake
   if (user === null){
     return (
@@ -93,6 +131,8 @@ const App = () => {
     <div>
       <h1>Blogs</h1>
       <Logout user={user} handleLogout={handleLogout} />
+      <BlogSubmit blogForm={blogForm} />
+      <hr/>
       {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
     </div>
   )
