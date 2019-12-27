@@ -1,7 +1,7 @@
 import React from 'react'
 
 const LoginForm = ({ loginForm }) => (
-  <form onSubmit={loginForm.handleLogin}>
+  <form onSubmit={loginForm.handleLogin} className="loginForm">
     <div>
       Username:
       <input
