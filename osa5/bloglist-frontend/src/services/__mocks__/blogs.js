@@ -37,7 +37,7 @@ const blogs = [
   },
   {
     likes: 2,
-    title: 'Gödel, Escher, Bach: an Eternal Golden Braid',
+    title: 'Gödel, Escher, Bach: an Eternal Golden Braid part II: Electric Boogaloo',
     author: 'Douglas Hofstadter',
     url: 'http://localhost:3003/api/blogs',
     user: {
@@ -64,4 +64,6 @@ const blogs = [
 const getAll = () => {
   return Promise.resolve(blogs)
 }
-export default { getAll }
+
+const setToken = () => {}
+export default { getAll , setToken }
