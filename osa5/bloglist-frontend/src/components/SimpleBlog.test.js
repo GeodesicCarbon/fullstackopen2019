@@ -4,6 +4,9 @@ import SimpleBlog from './SimpleBlog'
 
 describe('<SimpleBlog />', () => {
   let component
+  // nappien painamisen testaus
+  const mockHandler = jest.fn()
+  // esimerkkiblogi
   const testBlog = {
     title: 'This is a tesblog',
     author: 'Jest',
@@ -12,7 +15,7 @@ describe('<SimpleBlog />', () => {
 
   beforeEach(() => {
     component = render(
-      <SimpleBlog blog={testBlog} />
+      <SimpleBlog blog={testBlog} onClick={mockHandler}/>
     )
   })
 
@@ -37,5 +40,12 @@ describe('<SimpleBlog />', () => {
   test('contains correct likes', () => {
     const div = component.container.querySelector('.likes')
     expect(div).toHaveTextContent(`blog has ${testBlog.likes} likes`)
+  })
+
+  test('clicking the like button twice calls event handler twice', async () => {
+    const button = component.getByText('like')
+    fireEvent.click(button)
+    fireEvent.click(button)
+    expect(mockHandler.mock.calls.length).toBe(2)
   })
 })
