@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LoginForm = ({loginForm}) => (
+const LoginForm = ({ loginForm }) => (
   <form onSubmit={loginForm.handleLogin}>
     <div>
       Username:

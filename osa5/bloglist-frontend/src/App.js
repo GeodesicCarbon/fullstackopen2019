@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // Tuodaan tarvittavat komponentit
 import Blog from './components/Blog'
-import BlogSubmit from "./components/BlogSubmit"
+import BlogSubmit from './components/BlogSubmit'
 import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
@@ -16,7 +16,7 @@ const App = () => {
   // - näytettävät blogit
   const [blogs, setBlogs] = useState([])
   // - viestit ja virheilmoitukset
-  const [notification, setNotification] = useState({message: null, type: null})
+  const [notification, setNotification] = useState({ message: null, type: null })
   // - kirjautuminen
   const [username,  setUsername] =  useState('')
   const [password,  setPassword] =  useState('')
@@ -214,4 +214,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default App
