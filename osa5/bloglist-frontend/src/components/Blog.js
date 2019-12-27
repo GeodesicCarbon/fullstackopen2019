@@ -22,17 +22,17 @@ const Blog = ({ blog, username, handleLiking, handleDelete }) => {
 
   return (
     <div className="blog">
-      <div onClick={() => toggleExpanded()}>
+      <div className="titleAuthor" onClick={() => toggleExpanded()}>
         {blog.title} {blog.author}
       </div>
-      <div style ={showWhenExpanded}>
-        <div>
+      <div style={showWhenExpanded} className="expandedContent">
+        <div className="blogURL">
           <a href={blog.url}>{blog.url}</a>
         </div>
-        <div>
+        <div className="blogLikes">
           {blog.likes} likes <button onClick={() => handleLiking(blog.id)}>Like</button>
         </div>
-        <div>
+        <div className="addAuthor">
           Added by {blog.user.name}
         </div>
         {deleteButton()}
