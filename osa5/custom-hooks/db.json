@@ -1,0 +1,32 @@
+{
+  "notes": [
+    {
+      "content": "custom-hooks are awesome!",
+      "id": 1
+    },
+    {
+      "content": "best feature ever <3",
+      "id": 2
+    },
+    {
+      "content": "Test Note Please Ignore",
+      "id": 3
+    },
+    {
+      "content": "Test Note 2",
+      "id": 4
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "Einstein",
+      "number": "123-456789",
+      "id": 2
+    }
+  ]
+}
