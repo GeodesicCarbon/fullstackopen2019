@@ -9,6 +9,8 @@ import Togglable from './components/Togglable'
 // Tuodaan tarvittavat palvelut
 import blogService from './services/blogs'
 import loginService from './services/login'
+// Tuodaan custom hookit
+import { useField } from './hooks'
 
 // Applikaation pääosa
 const App = () => {
@@ -18,9 +20,9 @@ const App = () => {
   // - viestit ja virheilmoitukset
   const [notification, setNotification] = useState({ message: null, type: null })
   // - kirjautuminen
-  const [username,  setUsername] =  useState('')
-  const [password,  setPassword] =  useState('')
-  const [user,      setUser] =      useState(null)
+  const username        = useField('text')
+  const password        = useField('password')
+  const [user, setUser] = useState(null)
   // - uuden blogin lisääminen
   const [blogtitle,     setBlogtitle]       = useState('')
   const [blogauthor,    setBlogauthor]      = useState('')
@@ -50,7 +52,8 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password
+        username: username.value,
+        password: password.value
       })
 
       // tallennetaan kirjautunut käyttäjä selaimen muistiin
@@ -61,8 +64,8 @@ const App = () => {
       blogService.setToken(user.token)
       notify('Logged in succesfully', 'success')
       setUser(user)
-      setUsername('')
-      setPassword('')
+      username.reset()
+      password.reset()
     } catch (e) {
       notify('Incorrect username or password', 'error')
     }
@@ -162,15 +165,6 @@ const App = () => {
   // viite blogin lisäyslomakkeeseen
   const blogFormRef = React.createRef()
 
-  // kirjautumislomake
-  const loginForm = {
-    username,
-    setUsername,
-    password,
-    setPassword,
-    handleLogin
-  }
-
   // Blogin lisäämislomake
   const blogForm = {
     blogtitle,
@@ -187,7 +181,7 @@ const App = () => {
       <div>
         <Notification notification={notification} />
         <h1>Blogs</h1>
-        <Login loginForm={loginForm} />
+        <Login username={username} password={password} handleLogin={handleLogin} />
       </div>
     )
   }

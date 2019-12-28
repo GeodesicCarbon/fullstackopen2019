@@ -2,7 +2,6 @@ import React from 'react'
 import { render, waitForElement } from '@testing-library/react'
 jest.mock('./services/blogs')
 import App from './App'
-import { prettyDOM } from '@testing-library/dom'
 
 describe('<App />', () => {
   test('renders the login screen for new user', async () => {
