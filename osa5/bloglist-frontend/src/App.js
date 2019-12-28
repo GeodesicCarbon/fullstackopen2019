@@ -181,7 +181,7 @@ const App = () => {
       <div>
         <Notification notification={notification} />
         <h1>Blogs</h1>
-        <Login username={username} password={password} handleLogin={handleLogin} />
+        <Login username={username.input} password={password.input} handleLogin={handleLogin} />
       </div>
     )
   }

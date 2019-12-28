@@ -11,10 +11,14 @@ export const useField = (type) => {
     setValue('')
   }
 
+  // Jätetään reset pois lomakkeita varten
+  const input = { type, value, onChange }
+
   return {
     type,
     value,
     reset,
-    onChange
+    onChange,
+    input
   }
 }
