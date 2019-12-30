@@ -2,7 +2,7 @@ import React from 'react';
 
 import { voteAnecdote } from './reducers/anecdoteReducer'
 
-import NewAnecdote from './components/NewAnecdote'
+import AnecdoteForm from './components/AnecdoteForm'
 
 const App = (props) => {
   const anecdotes = props.store.getState()
@@ -25,7 +25,7 @@ const App = (props) => {
           </div>
         </div>
       )}
-      <NewAnecdote store={props.store} />
+      <AnecdoteForm store={props.store} />
     </div>
   )
 }
