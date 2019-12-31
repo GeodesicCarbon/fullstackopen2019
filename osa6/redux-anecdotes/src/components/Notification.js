@@ -1,6 +1,9 @@
 import React from 'react'
 
 const Notification = (props) => {
+  const notification = props.store.getState().notification
+  if (!notification)
+    return (<div></div>)
 
   const style = {
     border: 'solid',
@@ -9,7 +12,7 @@ const Notification = (props) => {
   }
   return (
     <div style={style}>
-      {props.store.getState().notification}
+      {notification}
     </div>
   )
 }
