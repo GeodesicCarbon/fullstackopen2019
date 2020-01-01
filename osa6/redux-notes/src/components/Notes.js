@@ -1,18 +1,20 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import Note from './Note'
 
 import { toggleImportanceOf } from '../reducers/noteReducer'
 
-const Notes = ({ store }) => {
-  const { notes, filter } = store.getState()
+const Notes = (props) => {
   const notesToShow = () => {
-    if ( filter === 'ALL' ) {
-      return notes
+    if ( props.filter === 'ALL' ) {
+      return props.notes
     }
-    return filter === 'IMPORTANT'
-      ? notes.filter(note => note.important)
-      : notes.filter(note => !note.important)
+
+    return props.filter === 'IMPORTANT'
+      ? props.notes.filter(note => note.important)
+      : props.notes.filter(note => !note.important)
   }
+
 
   return (
     <ul>
@@ -20,13 +22,24 @@ const Notes = ({ store }) => {
         <Note
           key={note.id}
           note={note}
-          handleClick={() =>
-            store.dispatch(toggleImportanceOf(note.id))
-          }
+          handleClick={() => toggleImportanceOf(note.id)}
         />
       )}
     </ul>
   )
 }
+const mapStateToProps = (state) => {
+  return {
+    notes: state.notes,
+    filter: state.filter,
+  }
+}
 
-export default Notes
+const mapDispatchToProps = {
+  toggleImportanceOf,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Notes)
