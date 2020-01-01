@@ -18,7 +18,7 @@ const Notes = (props) => {
 
   return (
     <ul>
-      {notesToShow().map(note =>
+      {props.visibleNotes.map(note =>
         <Note
           key={note.id}
           note={note}
@@ -28,10 +28,19 @@ const Notes = (props) => {
     </ul>
   )
 }
+
+const notesToShow = ({ notes, filter }) => {
+  if (filter === 'ALL') {
+    return notes
+  }
+  return filter === 'IMPORTANT'
+    ? notes.filter(note => note.important)
+    : notes.filter(note => !note.important)
+}
+
 const mapStateToProps = (state) => {
   return {
-    notes: state.notes,
-    filter: state.filter,
+    visibleNotes: notesToShow(state)
   }
 }
 
