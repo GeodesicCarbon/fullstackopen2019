@@ -1,9 +1,15 @@
+// tuodaan tarvittavat palvelut
+import anecdoteService from '../services/anecdotes'
+
+// reducerin logiikka
 const reducer = (state = [], action) => {
   console.log('state now: ', state)
   console.log('action', action)
   switch (action.type) {
+    // uuden anekdootin lisääminen listalle
     case 'NEW_ANECDOTE':
       return [...state, action.data]
+    // anekdootin äänten muutos
     case 'VOTE':
       const id = action.data.id
       const anecdoteToChange = state.find(a => a.id === id)
@@ -11,6 +17,7 @@ const reducer = (state = [], action) => {
       return state.map(
         anecdote => anecdote.id !== id ? anecdote : changedAnecdote
       )
+    // anekdoottilistan populointi
     case 'INIT_ANECDOTES':
       return action.data
     default:
@@ -18,10 +25,14 @@ const reducer = (state = [], action) => {
   }
 }
 
+// anekdoottilistan hakeminen tietokannalta
 export const initializeAnecdotes = (anecdotes) => {
-  return {
-    type: 'INIT_ANECDOTES',
-    data: anecdotes
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll()
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes
+    })
   }
 }
 

@@ -12,7 +12,7 @@ const getAll = async () => {
 
 // luodaa uusi anekdootti tietokantaan
 const createNew = async (content) => {
-  const object = { content }
+  const object = { content, votes: 0 }
   const res = await axios.post(baseUrl, object)
   return res.data
 }
