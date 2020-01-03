@@ -43,10 +43,14 @@ export const voteAnecdote = (id) => {
   }
 }
 
+// uuden anekdootin lisääminen tietokantaan
 export const createAnecdote = (data) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    data: data
+  return async dispatch => {
+    const anecdote = await anecdoteService.createNew(data)
+    dispatch({
+      type: 'NEW_ANECDOTE',
+      data: anecdote
+    })
   }
 }
 

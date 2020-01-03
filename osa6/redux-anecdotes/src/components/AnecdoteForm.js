@@ -6,16 +6,13 @@ import { connect } from 'react-redux'
 import { createAnecdote } from '../reducers/anecdoteReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-// tuodaan tarvittavat palvelut
-import anecdoteService from '../services/anecdotes'
-
 const AnecdoteForm = (props) => {
+  // uuden anekdootin luominen
   const addAnecdote = async (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    const newAnecdote = await anecdoteService.createNew(content)
-    props.createAnecdote(newAnecdote)
+    props.createAnecdote(content)
     props.setNotification(`Created a new anecdote: '${content}'`)
     setTimeout(() => {
       props.setNotification(null)
