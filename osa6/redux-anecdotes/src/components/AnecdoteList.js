@@ -4,9 +4,12 @@ import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = (props) => {
-  const vote = (id, content) => {
-    props.voteAnecdote(id)
-    props.setNotification(`voted '${content}'`)
+  const vote = (id) => {
+    const anecdote = props.anecdotes.find(a => a.id === id)
+    console.log('LIST')
+    console.log(anecdote)
+    props.voteAnecdote(anecdote)
+    props.setNotification(`voted '${anecdote.content}'`)
     setTimeout(() => {
       props.setNotification('')
     }, 5000)
@@ -29,7 +32,6 @@ const AnecdoteList = (props) => {
 }
 
 const anecdotesToShow = ({ anecdotes, filter}) => {
-  console.log(anecdotes)
   if (!filter)
     return anecdotes.sort((a, b) => b.votes - a.votes)
   return anecdotes
