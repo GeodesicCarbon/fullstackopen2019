@@ -5,9 +5,11 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 
 // tuodaan tarvittavat reducerit
 import notificationReducer from './reducers/notificationReducer'
+import blogReducer from './reducers/blogReducer'
 
 // yhdistetään reducerit yhdeksi olioksi
 const reducer = combineReducers({
+  blogs: blogReducer,
   notification: notificationReducer
 })
 

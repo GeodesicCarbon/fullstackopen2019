@@ -2,7 +2,7 @@
 const initialState = { message: null, type: null }
 
 // määritellään reducerin toiminta
-const reducer = (state = initialState, action) => {
+const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
   case 'NOTIFY':
     return state = action.notification
@@ -36,4 +36,4 @@ export const clearNotification = () => {
   }
 }
 
-export default reducer
+export default notificationReducer
