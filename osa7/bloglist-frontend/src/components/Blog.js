@@ -67,6 +67,12 @@ const Blog = (props) => {
           Added by {blog.user.name}
         </div>
         {deleteButton()}
+        <h4>comments</h4>
+        <ul>
+          {blog.comments.map(comment =>
+            <li key={comment}>{comment}</li>
+          )}
+        </ul>
       </div>
     </div>
   )

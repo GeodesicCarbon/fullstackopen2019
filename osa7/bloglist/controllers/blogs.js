@@ -47,6 +47,22 @@ blogsRouter.post('/', async (request, response, next) => {
     next(exception)
   }
 })
+// lisätään blogille kommentti
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  const body = request.body
+
+  try {
+    const blog = await Blog.findById(request.params.id)
+    const comment = body.comment
+    blog.comments = blog.comments.concat(comment)
+    const savedBlog = await blog.save()
+
+    const updatedBlog = await Blog.findById(savedBlog._id).populate('user', { username: 1, name: 1 })
+    response.status(201).json(updatedBlog.toJSON())
+  } catch (exception) {
+    next(exception)
+  }
+})
 
 // Poistetaan blogi
 blogsRouter.delete('/:id', async (request, response, next) => {
