@@ -8,7 +8,7 @@ const BlogList = (props) => {
     <div>
       {props.blogs.map(blog =>
         <div key={blog.id}>
-          <Blog blog={blog} username={props.username}/>
+          <Blog blog={blog}/>
         </div>
       )}
     </div>

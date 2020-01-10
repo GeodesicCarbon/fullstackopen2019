@@ -71,6 +71,7 @@ export const createBlog = (data) => {
   }
 }
 
+// blogilistauksen poistaminen
 export const deleteBlog = (id) => {
   return async dispatch => {
     await blogService.remove(id)
