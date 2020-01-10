@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { voteBlog, deleteBlog } from '../reducers/blogReducer'
+import { voteBlog, deleteBlog, addComment } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const Blog = (props) => {
@@ -42,6 +42,18 @@ const Blog = (props) => {
       }
     }
   }
+
+  const handleCommenting = async (event) => {
+    event.preventDefault()
+    const comment = event.target.comment.value
+    event.target.comment.value = ''
+    try {
+      await props.addComment(blog.id, comment)
+      notify('Added a comment', 'success')
+    } catch (e) {
+      notify('Commenting failed: ' + e, 'error')
+    }
+  }
   if(!blog.user || !blog.user.name)
     blog.user = { name: 'Uknown' }
 
@@ -68,6 +80,13 @@ const Blog = (props) => {
         </div>
         {deleteButton()}
         <h4>comments</h4>
+        <form onSubmit={handleCommenting} className="commentForm">
+          <input
+            type="text"
+            name='comment'
+          />
+          <button type="submit">Add comment</button>
+        </form>
         <ul>
           {blog.comments.map(comment =>
             <li key={comment}>{comment}</li>
@@ -88,7 +107,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = {
   voteBlog,
   deleteBlog,
-  setNotification
+  setNotification,
+  addComment
 }
 
 export default connect(

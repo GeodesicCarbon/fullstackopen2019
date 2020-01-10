@@ -23,6 +23,15 @@ const blogReducer = (state = [], action) => {
       blog => blog.id !== id
     )
   }
+  // Lisätään listaukselle kommentti
+  case 'ADD_COMMENT': {
+    const id = action.data.blog.id
+    const blogToChange = state.find(blog => blog.id === id)
+    const changedBlog = { ...blogToChange, comments: action.data.blog.comments }
+    return state.map(
+      blog => blog.id !== id ? blog : changedBlog
+    )
+  }
   // blogilistauksen ensimmäinen populointi
   case 'INIT_BLOGS':
     return action.data
@@ -78,6 +87,18 @@ export const deleteBlog = (id) => {
     dispatch({
       type: 'DELETE_BLOG',
       data: { blog: { id: id } }
+    })
+  }
+}
+
+// lisätään listaukselle kommentti
+export const addComment = (id, comment) => {
+  return async dispatch => {
+    const newComment = { comment: comment }
+    const blogUpdate = await blogService.addComment(id, newComment)
+    dispatch({
+      type: 'ADD_COMMENT',
+      data: { blog: blogUpdate }
     })
   }
 }
