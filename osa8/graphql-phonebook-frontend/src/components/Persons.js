@@ -6,7 +6,7 @@ const FIND_PERSON = gql`
   query findPersonByName($nameToSearch: String!) {
     findPerson(name: $nameToSearch) {
       name
-      phone 
+      phone
       id
       address {
         street
@@ -51,7 +51,7 @@ const Persons = ({ result }) => {
           {p.name} {p.phone}
           <button onClick={() => showPerson(p.name)} >
             show address
-          </button> 
+          </button>
         </div>
       )}
     </div>
