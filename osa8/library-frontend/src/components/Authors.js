@@ -1,8 +1,19 @@
 import React, { useState } from 'react'
-import { gql } from 'apollo-boost'
-import { useApolloClient } from '@apollo/react-hooks'
 
-const Authors = ({ show, result }) => {
+const Authors = ({ show, result, editAuthor }) => {
+  const [name, setName] = useState('')
+  const [setBornTo, setsetBornTo] = useState(1990)
+
+  const submit = async (e) => {
+    e.preventDefault()
+
+    await editAuthor({
+      variables: { name, setBornTo }
+    })
+
+    setName('')
+    setsetBornTo('')
+  }
 
   if (!show) {
     return null
@@ -34,7 +45,23 @@ const Authors = ({ show, result }) => {
           )}
         </tbody>
       </table>
-
+      <h3>Set birthyear</h3>
+      <form onSubmit={submit}>
+        <div>
+          name <input
+            value={name}
+            onChange={({ target }) => setName(target.value)}
+          />
+        </div>
+        <div>
+          phone <input
+            type='number'
+            value={setBornTo}
+            onChange={({ target }) => setsetBornTo(target.value)}
+          />
+        </div>
+        <button type='submit'>update Author</button>
+      </form>
     </div>
   )
 }
