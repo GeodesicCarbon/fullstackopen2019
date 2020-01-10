@@ -5,6 +5,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
+import Recommend from './components/Recommend'
 
 const ALL_AUTHORS = gql`
   {
@@ -65,6 +66,15 @@ const LOGIN = gql`
   }
 `
 
+const GET_ME = gql`
+ {
+   me {
+     username
+     favoriteGenre
+   }
+ }
+`
+
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [page, setPage] = useState('authors')
@@ -92,6 +102,7 @@ const App = () => {
 
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
+  const user = useQuery(GET_ME)
 
   const [addBook] = useMutation(CREATE_BOOK, {
     onError: handleError,
@@ -128,6 +139,7 @@ const App = () => {
           ? <button style={inline} onClick={() => setPage('login')}>log in</button>
           : <div style={inline} >
               <button onClick={() => setPage('add')}>add book</button>
+              <button onClick={() => setPage('recommend')}>recommendations</button>
               <button onClick={logout}>log out</button>
             </div>}
       </div>
@@ -153,6 +165,11 @@ const App = () => {
         login={login}
         setToken={(token) => setToken(token)}
         changePage={(page) => setPage(page)}
+      />
+      <Recommend
+        show={page === 'recommend'}
+        user={user}
+        result={books}
       />
 
     </div>

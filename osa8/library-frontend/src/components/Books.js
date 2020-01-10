@@ -18,7 +18,7 @@ const Books = ({ show, result }) => {
   return (
     <div>
       <h2>books</h2>
-
+      {filter ? <div> in genre {filter}</div> : null }
       <table>
         <tbody>
           <tr>
