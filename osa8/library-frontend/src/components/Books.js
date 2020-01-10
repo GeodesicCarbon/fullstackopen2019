@@ -1,6 +1,4 @@
 import React from 'react'
-import { gql } from 'apollo-boost'
-import { useApolloClient } from '@apollo/react-hooks'
 
 const Books = ({ show, result }) => {
   if (!show) {

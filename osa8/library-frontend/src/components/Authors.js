@@ -2,17 +2,17 @@ import React, { useState } from 'react'
 
 const Authors = ({ show, result, editAuthor }) => {
   const [name, setName] = useState('')
-  const [setBornTo, setsetBornTo] = useState(1990)
+  const [year, setYear] = useState(1990)
 
   const submit = async (e) => {
     e.preventDefault()
 
     await editAuthor({
-      variables: { name, setBornTo }
+      variables: { name, setBornTo: Number(year) }
     })
 
     setName('')
-    setsetBornTo('')
+    setYear('')
   }
 
   if (!show) {
@@ -21,6 +21,7 @@ const Authors = ({ show, result, editAuthor }) => {
   if (result.loading) {
     return <div>loading...</div>
   }
+  const authors = result.data.allAuthors
 
   return (
     <div>
@@ -36,7 +37,7 @@ const Authors = ({ show, result, editAuthor }) => {
               books
             </th>
           </tr>
-          {result.data.allAuthors.map(a =>
+          {authors.map(a =>
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
@@ -48,16 +49,20 @@ const Authors = ({ show, result, editAuthor }) => {
       <h3>Set birthyear</h3>
       <form onSubmit={submit}>
         <div>
-          name <input
+          name <select
             value={name}
             onChange={({ target }) => setName(target.value)}
-          />
+            >
+              {authors.map(a =>
+                <option key={a.name} value={a.name}>{a.name}</option>
+              )}
+            </select>
         </div>
         <div>
-          phone <input
+          birthyear <input
             type='number'
-            value={setBornTo}
-            onChange={({ target }) => setsetBornTo(target.value)}
+            value={year}
+            onChange={({ target }) => setYear(target.value)}
           />
         </div>
         <button type='submit'>update Author</button>
