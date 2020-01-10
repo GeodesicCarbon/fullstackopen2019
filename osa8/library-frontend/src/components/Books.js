@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const Books = ({ show, result }) => {
+  const [filter, setFilter] = useState()
   if (!show) {
     return null
   }
   if (result.loading) {
     return <div>loading...</div>
   }
+  const bookGenres = [...new Set(result.data.allBooks.flatMap(a => a.genres))]
+  const books = filter
+    ? result.data.allBooks.filter(book => book.genres.includes(filter))
+    : result.data.allBooks
+
+  const inline = {display: 'inline-block'}
 
   return (
     <div>
@@ -23,7 +30,7 @@ const Books = ({ show, result }) => {
               published
             </th>
           </tr>
-          {result.data.allBooks.map(a =>
+          {books.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -32,6 +39,12 @@ const Books = ({ show, result }) => {
           )}
         </tbody>
       </table>
+      <div>
+        { bookGenres.map(genre =>
+          <button style={inline} key={genre} onClick={() => setFilter(genre)}> {genre}</button>
+        )}
+        <button style={inline} onClick={() => setFilter()}> all genres</button>
+      </div>
     </div>
   )
 }
