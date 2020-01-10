@@ -16,7 +16,7 @@ const getAll = async () => {
 }
 
 // lisätään uusi blogi palvelimelle
-const create = async newBlog => {
+const create = async (newBlog) => {
   const config = {
     headers: { Authorization: token }
   }

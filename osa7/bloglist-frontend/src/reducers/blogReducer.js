@@ -8,12 +8,19 @@ const blogReducer = (state = [], action) => {
   case 'NEW_BLOG':
     return [...state, action.data]
   // blogilistauksen äänen muutos
-  case 'VOTE':{
+  case 'VOTE': {
     const id = action.data.blog.id
     const blogToChange = state.find(blog => blog.id === id)
-    const changedBlog = { ...blogToChange, votes: action.data.blogs.votes }
+    const changedBlog = { ...blogToChange, likes: action.data.blog.likes }
     return state.map(
       blog => blog.id !== id ? blog : changedBlog
+    )
+  }
+  // poista blogilistaus
+  case 'DELETE_BLOG': {
+    const id = action.data.blog.id
+    return state.filter(
+      blog => blog.id !== id
     )
   }
   // blogilistauksen ensimmäinen populointi
@@ -36,14 +43,16 @@ export const initializeBlogs = () => {
 }
 
 // blogilistauksen äänestäminen
-export const voteBLog = (blog) => {
+export const voteBlog = (blog) => {
   return async dispatch => {
-    const blogUpdate = await blogService(
-      blog.id,
-      { ...blog,
-        votes: blog.votes + 1
-      }
-    )
+    const updatedBlog = {
+      likes: blog.likes + 1,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      user: blog.user.id
+    }
+    const blogUpdate = await blogService.update(blog.id, updatedBlog)
     dispatch({
       type: 'VOTE',
       data: { blog: blogUpdate }
@@ -54,10 +63,20 @@ export const voteBLog = (blog) => {
 // uuden blogilistauksen lisääminen tietokantaan
 export const createBlog = (data) => {
   return async dispatch => {
-    const blog = await blogService.createNew(data)
+    const blog = await blogService.create(data)
     dispatch({
       type: 'NEW_BLOG',
       data: blog
+    })
+  }
+}
+
+export const deleteBlog = (id) => {
+  return async dispatch => {
+    await blogService.remove(id)
+    dispatch({
+      type: 'DELETE_BLOG',
+      data: { blog: { id: id } }
     })
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 // Tuodaan tarvittavat komponentit
-import Blog from './components/Blog'
+import BlogList  from './components/BlogList'
 import BlogSubmit from './components/BlogSubmit'
 import Login from './components/Login'
 import Logout from './components/Logout'
@@ -14,28 +14,19 @@ import loginService from './services/login'
 import { useField } from './hooks'
 // Tuodaan ActionCreatorit
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs } from './reducers/blogReducer'
 
 // Applikaation pääosa
 const App = (props) => {
   // Alustetaan tarvittavat tilat
-  // - näytettävät blogit
-  const [blogs, setBlogs] = useState([])
   // - kirjautuminen
   const username        = useField('text')
   const password        = useField('password')
   const [user, setUser] = useState(null)
-  // - uuden blogin lisääminen
-  const [blogtitle,     setBlogtitle]       = useState('')
-  const [blogauthor,    setBlogauthor]      = useState('')
-  const [blogurl,       setBlogurl]         = useState('')
 
   // haetaan blogit palvelimelta
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const initialBlogs = await blogService.getAll()
-      setBlogs(initialBlogs)
-    }
-    fetchBlogs()
+    props.initializeBlogs()
   },[])
 
   // jos käyttäjä on jo kirjautunut, haetaan tiedot selaimen muistista
@@ -80,74 +71,6 @@ const App = (props) => {
     notify('Logged out succesfully', 'success')
   }
 
-  // Uuden blogin luomisen logiikka
-  const handleNewBlog = async (event) => {
-    event.preventDefault()
-    blogFormRef.current.toggleVisibility()
-    try {
-      const blogObject = {
-        title:  blogtitle,
-        author: blogauthor,
-        url:    blogurl,
-        likes:  0,
-      }
-
-      const res = await blogService.create(blogObject)
-      res.user = {
-        username: user.username,
-        name: user.name
-      }
-      setBlogs(blogs.concat(res))
-      setBlogurl('')
-      setBlogtitle('')
-      setBlogauthor('')
-      notify('Added "' + blogObject.title + '" by ' + blogObject.author, 'success')
-    } catch (e) {
-      if (e.response)
-        notify('Unable to submit a note: ' + e.response.data.error, 'error')
-      else
-        notify('Unable to submit a note: ' + e, 'error')
-    }
-  }
-  // Tykkäysten korottamisen logiikka
-  const handleLiking = async (id) => {
-    const blog = blogs.find(x => x.id === id)
-    try {
-      const updatedBlog = {
-        likes: blog.likes + 1,
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        user: blog.user.id
-      }
-      const res = await blogService.update(blog.id, updatedBlog)
-      setBlogs(blogs.map(blog => blog.id !== id ? blog : res))
-      notify(`Submitted a like: ${blog.title}`, 'success')
-    } catch (e) {
-      if (e.response)
-        notify('Unable to submit a note: ' + e.response.data.error, 'error')
-      else
-        notify('Unable to submit a note: ' + e, 'error')
-    }
-  }
-
-  // Blogien poistaminen listalta
-  const handleDelete = async (id) => {
-    const blog = blogs.find(b => b.id === id)
-    if (window.confirm(`Are you sure you want to delete '${blog.title}' by ${blog.author}`)) {
-      try {
-        await blogService.remove(id)
-        setBlogs(blogs.filter(b => b.id !== id))
-        notify('Blog deleted succesfully', 'success')
-      } catch (e) {
-        if (e.response)
-          notify('Unable to delete a note: ' + e.response.data.error, 'error')
-        else
-          notify('Unable to delete a note: ' + e, 'error')
-      }
-    }
-  }
-
   // Funktio, joka luo ilmoituksen
   const notify = (message, type) => {
     props.setNotification({
@@ -160,15 +83,7 @@ const App = (props) => {
   const blogFormRef = React.createRef()
 
   // Blogin lisäämislomake
-  const blogForm = {
-    blogtitle,
-    setBlogtitle,
-    blogauthor,
-    setBlogauthor,
-    blogurl,
-    setBlogurl,
-    handleNewBlog
-  }
+
   // jos käyttäjä ei ole kirjautunut sisään näytetään vain kirjautumislomake
   if (user === null){
     return (
@@ -186,18 +101,10 @@ const App = (props) => {
       <h1>Blogs</h1>
       <Logout user={user} handleLogout={handleLogout} />
       <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-        <BlogSubmit blogForm={blogForm} />
+        <BlogSubmit />
       </Togglable>
       <hr/>
-      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog
-          key={blog.id}
-          username={user.username}
-          blog={blog}
-          handleLiking={handleLiking}
-          handleDelete={handleDelete}
-        />
-      )}
+      <BlogList username={user.username} />
     </div>
   )
 }
@@ -208,7 +115,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-  setNotification
+  setNotification,
+  initializeBlogs
 }
 
 export default connect(
