@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { gql } from 'apollo-boost'
 import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks'
+import { useLazyQuery } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -74,11 +75,26 @@ const GET_ME = gql`
    }
  }
 `
+const GET_BOOKS = gql`
+query Books($genre: String){
+  allBooks(genre: $genre) {
+    title
+    author {
+      name
+    }
+    genres
+    id
+    published
+  }
+}
+`
 
 const App = () => {
+  const client = useApolloClient()
   const [errorMessage, setErrorMessage] = useState(null)
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
+  const [getBooks, { loading, data, filter}] = useLazyQuery(GET_BOOKS, { client: client })
 
   useEffect(() => {
     const storedToken = window.localStorage.getItem('library-user-token')
@@ -87,7 +103,7 @@ const App = () => {
     }
   },[])
 
-  const client = useApolloClient()
+
 
   const handleError = (error) => {
     console.log(error)
@@ -106,7 +122,11 @@ const App = () => {
 
   const [addBook] = useMutation(CREATE_BOOK, {
     onError: handleError,
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
+    refetchQueries: [
+      { query: ALL_BOOKS },
+      { query: ALL_AUTHORS },
+      { query: GET_BOOKS }
+    ]
   })
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
@@ -153,7 +173,11 @@ const App = () => {
 
       <Books
         show={page === 'books'}
-        result={books}
+        genres={books.data ? [...new Set(books.data.allBooks.flatMap(a => a.genres))] : []}
+        getBooks={getBooks}
+        loading={loading}
+        data={data}
+        filter={filter}
       />
 
       <NewBook
@@ -169,7 +193,9 @@ const App = () => {
       <Recommend
         show={page === 'recommend'}
         user={user}
-        result={books}
+        client={client}
+        genres={books.data ? [...new Set(books.data.allBooks.flatMap(a => a.genres))] : []}
+        query={GET_BOOKS}
       />
 
     </div>

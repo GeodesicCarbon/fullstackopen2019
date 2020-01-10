@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 
-const Books = ({ show, result }) => {
-  const [filter, setFilter] = useState()
+
+const Books = ({ show, genres, getBooks, loading, data, filter }) => {
+  useEffect(() => {
+    getBooks()
+  }, [])
   if (!show) {
     return null
   }
-  if (result.loading) {
+  if ( loading ) {
     return <div>loading...</div>
   }
-  const bookGenres = [...new Set(result.data.allBooks.flatMap(a => a.genres))]
-  const books = filter
-    ? result.data.allBooks.filter(book => book.genres.includes(filter))
-    : result.data.allBooks
-
+  const books = data ? data.allBooks : []
   const inline = {display: 'inline-block'}
 
   return (
@@ -40,10 +39,10 @@ const Books = ({ show, result }) => {
         </tbody>
       </table>
       <div>
-        { bookGenres.map(genre =>
-          <button style={inline} key={genre} onClick={() => setFilter(genre)}> {genre}</button>
+        { genres.map(genre =>
+          <button style={inline} key={genre} onClick={() => getBooks({ variables: { genre: genre }})}> {genre}</button>
         )}
-        <button style={inline} onClick={() => setFilter()}> all genres</button>
+        <button style={inline} onClick={() => getBooks()}> all genres</button>
       </div>
     </div>
   )
