@@ -1,17 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { loginUser } from '../reducers/loginReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Form, Icon, Input, Button } from 'antd'
 
 const LoginForm = (props) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const handleLogin = async (event) => {
     event.preventDefault()
     const user = {
-      username: event.target.username.value,
-      password: event.target.password.value
+      username: username,
+      password: password
     }
-    event.target.username.value = ''
-    event.target.password.value = ''
+    setUsername('')
+    setPassword('')
+    // event.target.username.value = ''
+    // event.target.password.value = ''
     try {
       await props.loginUser(user)
       notify('Logged in succesfully', 'success')
@@ -26,23 +31,29 @@ const LoginForm = (props) => {
     }, 5)
   }
   return(
-    <form onSubmit={handleLogin} className="loginForm">
-      <div>
-        Username:
-        <input
-          type="text"
-          name='username'
+    <Form onSubmit={handleLogin} className="login-form">
+      <Form.Item>
+        <Input
+          prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
-      </div>
-      <div>
-        Password:
-        <input
+      </Form.Item>
+      <Form.Item>
+        <Input
+          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           type="password"
-          name='password'
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+      </Form.Item>
+
+      <Button type="primary" htmlType="submit" className="login-form-button">
+        Log in
+      </Button>
+    </Form>
   )
 }
 const Login = (props) => (
