@@ -50,7 +50,7 @@ const Blog = (props) => {
     blog.user = { name: 'Uknown' }
 
   const deleteButton = () => {
-    if (blog.user.username === props.user.username)
+    if (blog.user.username === props.login.username)
       return (
         <div>
           <button onClick={() => handleDelete(blog.id)}>Remove blog from note</button>
@@ -81,7 +81,7 @@ const Blog = (props) => {
 const mapStateToProps = (state) => {
   return {
     notification: state.notification,
-    user: state.user
+    login: state.login
   }
 }
 const mapDispatchToProps = {

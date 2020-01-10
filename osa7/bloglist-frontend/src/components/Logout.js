@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { logoutUser } from '../reducers/userReducer'
+import { logoutUser } from '../reducers/loginReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const Logout = (props) => {
@@ -16,13 +16,13 @@ const Logout = (props) => {
   }
   return(
     <div>
-      <p> Logged in as {} <button onClick={handleLogout}>Logout</button></p>
+      <p> Logged in as {props.login.username} <button onClick={handleLogout}>Logout</button></p>
     </div>
   )
 }
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    login: state.login
   }
 }
 const mapDispatchToProps = {

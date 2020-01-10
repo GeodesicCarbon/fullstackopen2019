@@ -6,13 +6,15 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 // tuodaan tarvittavat reducerit
 import notificationReducer from './reducers/notificationReducer'
 import blogReducer from './reducers/blogReducer'
-import userReducer from './reducers/userReducer'
+import loginReducer from './reducers/loginReducer'
+import usersReducer from './reducers/usersReducer'
 
 // yhdistetään reducerit yhdeksi olioksi
 const reducer = combineReducers({
   blogs: blogReducer,
   notification: notificationReducer,
-  user: userReducer
+  login: loginReducer,
+  users: usersReducer
 })
 
 // tehdään yhdistetyistä reducereistä store ja laitetaan thunk käyttöön

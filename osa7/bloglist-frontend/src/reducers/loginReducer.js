@@ -3,7 +3,7 @@ import loginService from '../services/login'
 import blogService from '../services/blogs'
 
 // määritellään reducerin toiminta
-const userReducer = (state = null, action) => {
+const loginReducer = (state = null, action) => {
   switch (action.type) {
   // kirjaudutaan sisään
   case 'LOGIN':
@@ -12,21 +12,21 @@ const userReducer = (state = null, action) => {
   case 'LOGOUT':
     return null
   // ladataan lokaalisesti tallennettu käyttäjä
-  case 'INIT_USER':
+  case 'INIT_LOGIN':
     return action.data
   default:
     return state
   }
 }
 // käyttäjän hakeminen lokaalisesti
-export const initializeUser = () => {
+export const initializeLogin = () => {
   return dispatch => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       blogService.setToken(user.token)
       dispatch({
-        type: 'INIT_USER',
+        type: 'INIT_LOGIN',
         data: user
       })
     }
@@ -62,4 +62,4 @@ export const logoutUser = () => {
 }
 
 
-export default userReducer
+export default loginReducer

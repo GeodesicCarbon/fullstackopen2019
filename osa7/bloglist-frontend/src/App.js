@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
+import {
+  BrowserRouter as Router,
+  Route,
+} from 'react-router-dom'
 // Tuodaan tarvittavat komponentit
 import BlogList  from './components/BlogList'
 import BlogSubmit from './components/BlogSubmit'
@@ -7,10 +11,12 @@ import Login from './components/Login'
 import Logout from './components/Logout'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 // Tuodaan ActionCreatorit
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
-import { initializeUser } from './reducers/userReducer'
+import { initializeLogin } from './reducers/loginReducer'
+import { initializeUsers } from './reducers/usersReducer'
 
 // Applikaation pääosa
 const App = (props) => {
@@ -22,14 +28,18 @@ const App = (props) => {
 
   // jos käyttäjä on jo kirjautunut, haetaan tiedot selaimen muistista
   useEffect(() => {
-    props.initializeUser()
+    props.initializeLogin()
   }, [])
+  // haetaan käyttäjätiedot
+  useEffect(() => {
+    props.initializeUsers()
+  })
 
   // viite blogin lisäyslomakkeeseen
   const blogFormRef = React.createRef()
 
   // jos käyttäjä ei ole kirjautunut sisään näytetään vain kirjautumislomake
-  if (props.user === null){
+  if (props.login === null){
     return (
       <div>
         <Notification />
@@ -40,29 +50,37 @@ const App = (props) => {
   }
 
   return (
-    <div>
-      <Notification/>
-      <h1>Blogs</h1>
-      <Logout />
-      <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-        <BlogSubmit />
-      </Togglable>
-      <hr/>
-      <BlogList/>
-    </div>
+    <Router>
+      <div>
+        <Notification/>
+        <h1>Blogs</h1>
+        <Logout />
+        <Route exact path="/" render={() =>
+          <div>
+            <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+              <BlogSubmit />
+            </Togglable>
+            <hr/>
+            <BlogList/>
+          </div>
+        }/>
+        <Route exact path="/users" render={() => <Users />}/>
+      </div>
+    </Router>
   )
 }
 const mapStateToProps = (state) => {
   return {
     notification:  state.notification,
-    user: state.user
+    login: state.login
   }
 }
 
 const mapDispatchToProps = {
   setNotification,
   initializeBlogs,
-  initializeUser
+  initializeLogin,
+  initializeUsers
 }
 
 export default connect(

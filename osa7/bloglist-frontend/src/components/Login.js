@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { loginUser } from '../reducers/userReducer'
+import { loginUser } from '../reducers/loginReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const LoginForm = (props) => {
@@ -53,7 +53,7 @@ const Login = (props) => (
 )
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    login: state.login
   }
 }
 const mapDispatchToProps = {
