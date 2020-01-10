@@ -94,7 +94,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
-  const [getBooks, { loading, data, filter}] = useLazyQuery(GET_BOOKS, { client: client })
+  const [getBooks, { loading, data, filter}] = useLazyQuery(GET_BOOKS, { client: client, fetchPolicy: 'no-cache' })
 
   useEffect(() => {
     const storedToken = window.localStorage.getItem('library-user-token')

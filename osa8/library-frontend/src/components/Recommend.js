@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useLazyQuery } from '@apollo/client'
 
 const Recommend = ({ show, user, client, genres, query }) => {
-  const [getBooks, { loading, data }] = useLazyQuery(query, { client: client })
+  const [getBooks, { loading, data }] = useLazyQuery(query, { client: client, fetchPolicy: 'no-cache' })
   useEffect(() => {
     if(user.data)
      getBooks({ variables: { genre: user.data.me.favoriteGenre }})
