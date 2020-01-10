@@ -12,6 +12,7 @@ import Logout from './components/Logout'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 // Tuodaan ActionCreatorit
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
@@ -65,6 +66,9 @@ const App = (props) => {
           </div>
         }/>
         <Route exact path="/users" render={() => <Users />}/>
+        <Route exact path="/users/:id" render={({ match }) =>
+          <User id={match.params.id}/>
+        }/>
       </div>
     </Router>
   )
