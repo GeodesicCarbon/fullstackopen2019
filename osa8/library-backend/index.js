@@ -149,11 +149,12 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      let resolverBooks = await Book.find({}).populate('author', {name: 1, born: 1})
+    const query = {}
       if (args.author)
         resolverBooks = resolverBooks.filter(b => b.author === args.author)
       if (args.genre)
-        resolverBooks = resolverBooks.filter(b => b.genres.includes(args.genre))
+        query.genres = {$in: [args.genre] }
+      let resolverBooks = await Book.find(query).populate('author', {name: 1, born: 1})
       return resolverBooks
     },
     allAuthors: () => Author.find({})
@@ -171,13 +172,20 @@ const resolvers = {
       const book = new Book({ ...args, author: author})
       return book.save()
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(a => a.name === args.name)
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name })
       if(!author)
         return null
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
-      return updatedAuthor
+
+      author.born = args.setBornTo
+      try {
+        await author.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+      return author
     }
   }
 }
