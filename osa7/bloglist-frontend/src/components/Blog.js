@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { voteBlog, deleteBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const Blog = (props) => {
-  const [expanded, setExpanded] = useState(false)
 
   const blog = props.blog
+  if(!blog || !props.login)
+    return null
 
   const notify = (message, type) => {
     props.setNotification({
@@ -41,11 +42,6 @@ const Blog = (props) => {
       }
     }
   }
-  const showWhenExpanded = { display: expanded ? '' : 'none' }
-
-  const toggleExpanded = () => {
-    setExpanded(!expanded)
-  }
   if(!blog.user || !blog.user.name)
     blog.user = { name: 'Uknown' }
 
@@ -59,17 +55,15 @@ const Blog = (props) => {
 
   return (
     <div className="blog">
-      <div className="titleAuthor" onClick={() => toggleExpanded()}>
-        {blog.title} {blog.author}
-      </div>
-      <div style={showWhenExpanded} className="expandedContent">
+      <div className="expandedContent">
+        <h2>{blog.title}</h2>
         <div className="blogURL">
           <a href={blog.url}>{blog.url}</a>
         </div>
         <div className="blogLikes">
           {blog.likes} likes <button onClick={() => handleLiking(blog.id)}>Like</button>
         </div>
-        <div className="addAuthor">
+        <div className="add Author">
           Added by {blog.user.name}
         </div>
         {deleteButton()}
@@ -78,10 +72,11 @@ const Blog = (props) => {
   )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
     notification: state.notification,
-    login: state.login
+    login: state.login,
+    blog: ownProps.blog
   }
 }
 const mapDispatchToProps = {

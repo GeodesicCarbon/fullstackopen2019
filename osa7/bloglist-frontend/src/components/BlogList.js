@@ -1,14 +1,15 @@
 import React from 'react'
+import {
+  Link
+} from 'react-router-dom'
 import { connect } from 'react-redux'
-
-import Blog from './Blog'
 
 const BlogList = (props) => {
   return (
     <div>
       {props.blogs.map(blog =>
-        <div key={blog.id}>
-          <Blog blog={blog}/>
+        <div className='blog' key={blog.id}>
+          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
         </div>
       )}
     </div>

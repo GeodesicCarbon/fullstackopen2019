@@ -2,17 +2,19 @@ import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import {
   BrowserRouter as Router,
-  Route,
+  Route, Redirect
 } from 'react-router-dom'
 // Tuodaan tarvittavat komponentit
 import BlogList  from './components/BlogList'
 import BlogSubmit from './components/BlogSubmit'
 import Login from './components/Login'
-import Logout from './components/Logout'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import Blog from './components/Blog'
+import Menu from './components/Menu'
+
 // Tuodaan ActionCreatorit
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
@@ -49,14 +51,17 @@ const App = (props) => {
       </div>
     )
   }
+  const findBlogById = (id) =>
+    props.blogs.find(blog => blog.id === id)
 
   return (
     <Router>
       <div>
+        <Menu />
         <Notification/>
         <h1>Blogs</h1>
-        <Logout />
-        <Route exact path="/" render={() =>
+        <Route exact path="/" render={() => <Redirect to="/blogs"/>} />
+        <Route exact path="/blogs" render={() =>
           <div>
             <Togglable buttonLabel="New Blog" ref={blogFormRef}>
               <BlogSubmit />
@@ -69,6 +74,9 @@ const App = (props) => {
         <Route exact path="/users/:id" render={({ match }) =>
           <User id={match.params.id}/>
         }/>
+        <Route exact path="/blogs/:id" render={({ match }) =>
+          <Blog blog={findBlogById(match.params.id)}/>
+        }/>
       </div>
     </Router>
   )
@@ -76,7 +84,8 @@ const App = (props) => {
 const mapStateToProps = (state) => {
   return {
     notification:  state.notification,
-    login: state.login
+    login: state.login,
+    blogs: state.blogs
   }
 }
 
