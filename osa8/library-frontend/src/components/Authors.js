@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Authors = ({ show, result, editAuthor }) => {
+const Authors = ({ show, result, editAuthor, token }) => {
   const [name, setName] = useState('')
   const [year, setYear] = useState(1990)
 
@@ -46,27 +46,31 @@ const Authors = ({ show, result, editAuthor }) => {
           )}
         </tbody>
       </table>
-      <h3>Set birthyear</h3>
-      <form onSubmit={submit}>
+      {token ?
         <div>
-          name <select
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-            >
-              {authors.map(a =>
-                <option key={a.name} value={a.name}>{a.name}</option>
-              )}
-            </select>
+          <h3>Set birthyear</h3>
+          <form onSubmit={submit}>
+            <div>
+              name <select
+                value={name}
+                onChange={({ target }) => setName(target.value)}
+                >
+                  {authors.map(a =>
+                    <option key={a.name} value={a.name}>{a.name}</option>
+                  )}
+                </select>
+            </div>
+            <div>
+              birthyear <input
+                type='number'
+                value={year}
+                onChange={({ target }) => setYear(target.value)}
+              />
+            </div>
+            <button type='submit'>update Author</button>
+          </form>
         </div>
-        <div>
-          birthyear <input
-            type='number'
-            value={year}
-            onChange={({ target }) => setYear(target.value)}
-          />
-        </div>
-        <button type='submit'>update Author</button>
-      </form>
+    : null}
     </div>
   )
 }
