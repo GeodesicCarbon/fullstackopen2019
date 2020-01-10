@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { gql } from 'apollo-boost'
-import { useQuery, useMutation, useApolloClient } from '@apollo/react-hooks'
+import { useQuery, useMutation, useSubscription ,useApolloClient } from '@apollo/react-hooks'
 import { useLazyQuery } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -88,6 +88,29 @@ query Books($genre: String){
   }
 }
 `
+const BOOK_DETAILS = gql`
+fragment BookDetails on Book {
+  title
+  author {
+    name
+    born
+  }
+  genres
+  id
+  published
+}
+`
+
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+
+${BOOK_DETAILS}
+`
+
 
 const App = () => {
   const client = useApolloClient()
@@ -143,6 +166,14 @@ const App = () => {
     localStorage.clear()
     client.resetStore()
   }
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      window.alert(
+        `New book added to the library: '${subscriptionData.data.bookAdded.title}' by ${subscriptionData.data.bookAdded.author.name}`
+      )
+    }
+  })
   const inline = {display: 'inline-block'}
 
   return (
