@@ -28,16 +28,19 @@ const App = (props) => {
   // haetaan blogit palvelimelta
   useEffect(() => {
     props.initializeBlogs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   // jos käyttäjä on jo kirjautunut, haetaan tiedot selaimen muistista
   useEffect(() => {
     props.initializeLogin()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // haetaan käyttäjätiedot
   useEffect(() => {
     props.initializeUsers()
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // viite blogin lisäyslomakkeeseen
   const blogFormRef = React.createRef()
